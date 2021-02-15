@@ -2,7 +2,7 @@
 
 Mainly intended as a plugin for argocd
 
-Will scan the current directory recursively for any .yaml (or .yml if you're so inclined) files and attempt to replaces strings of the form <vault:/store/data/path!key> with those obtained from a vault kv2 store. It is intended that this is run from within your argocd-server pod as a plugin.
+Will scan the current directory recursively for any .yaml (or .yml if you're so inclined) files and attempt to replaces strings of the form \<vault:/store/data/path!key\> with those obtained from a vault kv2 store. It is intended that this is run from within your argocd-server pod as a plugin.
 
 ## Authentication
 
@@ -23,7 +23,7 @@ It will use the environment variable VAULT_AUTH_PATH to determine the authorisat
 
 Currently the only valid 'URL style' to a path is
 
-<vault:/store/data/path!key>
+\<vault:/store/data/path!key\>
 
 You must put the ../data/.. into the path. If your path or key contains !, <, > or | you must URL escape it. If you path or key has one or more leading or trailing spaces or tabs you must URL escape them you weirdo.
 
