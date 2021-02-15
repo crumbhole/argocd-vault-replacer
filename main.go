@@ -24,25 +24,22 @@ func updateFile(path string, info os.FileInfo, err error) error {
 	}
 	fileRegexp := regexp.MustCompile(`\.ya?ml$`)
 	if fileRegexp.MatchString(path) {
-		fmt.Printf("!!Processing %s\n", path)
 		origcontents, err := ioutil.ReadFile(path)
 		if err != nil {
 			fmt.Println("GGFile reading error", err)
 			return err
 		}
 		modifycontents := substitution.Substitute(origcontents, vaultValueSource.VaultValueSource{})
-		println(string(origcontents))
 		if err != nil {
 			fmt.Println("Substitution error", err)
 			return err
 		}
 		if !bytes.Equal(modifycontents, origcontents) {
-			println(string(modifycontents))
-			// err = ioutil.WriteFile(path, modifycontents, info.Mode())
-			// if err != nil {
-			// 	fmt.Println("Couldn't modify file", err)
-			// 	return err
-			// }
+			err = ioutil.WriteFile(path, modifycontents, info.Mode())
+			if err != nil {
+				fmt.Println("Couldn't modify file", err)
+				return err
+			}
 		}
 	}
 	return nil
