@@ -1,10 +1,12 @@
 package substitution
 
 import (
-//	"regexp"
+	"regexp"
 )
 
 // Takes a whole multi-line []byte and finds appropriate subsitutions
 func Substitute(input []byte, source ValueSource) []byte {
-	return input
+	reValue := regexp.MustCompile(`<[ \t]*vault:[^\r\n]+?>`)
+	subst := Substitutor{source: source}
+	return reValue.ReplaceAllFunc(input, subst.substituteValue)
 }

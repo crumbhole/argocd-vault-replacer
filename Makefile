@@ -1,5 +1,7 @@
 .PHONY:	all clean code-vet code-fmt test
 
+DEPS := $(shell find . -type f -name "*.go" -printf "%p ")
+
 all: code-vet code-fmt test build/vault-replacer
 
 clean:
@@ -8,15 +10,16 @@ clean:
 test:
 	go test ./...
 
-build/vault-replacer: $(PACKAGE)
-	go build -o ./...
+build/vault-replacer: $(DEPS)
+	mkdir -p build
+	go build -o build ./...
 
-code-vet: $(GENERATED_FILES)
+code-vet: $(DEPS)
 ## Run go vet for this project. More info: https://golang.org/cmd/vet/
 	@echo go vet
 	go vet $$(go list ./... )
 
-code-fmt: $(GENERATED_FILES)
+code-fmt: $(DEPS)
 ## Run go fmt for this project
 	@echo go fmt
 	go fmt $$(go list ./... )

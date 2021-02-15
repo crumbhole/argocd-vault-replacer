@@ -14,7 +14,6 @@ type mockValueSource struct {
 	values map[pathKeyTuple][]byte
 }
 
-
 func (m mockValueSource) GetValue(path []byte, key []byte) *[]byte {
 	var pk = pathKeyTuple{strings.TrimSuffix(string(path), `/`), string(key)}
 	//	fmt.Printf("Looking up %v\n", pk)
