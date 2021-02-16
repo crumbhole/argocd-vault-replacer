@@ -29,7 +29,7 @@ jobs:
     steps:
       - name: Check out the repo
         uses: actions/checkout@v2
-      - mame: Get git tag
+      - name: Get git tag
         uses: little-core-labs/get-git-tag@v3.0.1
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v1
