@@ -59,7 +59,7 @@ vault write auth/kubernetes/role/argocd \
         policies=argocd \
         ttl=1h
 ```
-This is better documented by Hashicorp themselves, do please refer to their documentation.
+This is better documented by Hashicorp themselves, do please refer to [their documentation](https://www.vaultproject.io/docs/auth/kubernetes).
 
 Lastly, you will need to modify the argocd-repo-server deployment to use your new serviceAccount, and to allow the serviceAccountToken to automount when the pod starts up. You must patch the deployment with:
 ```YAML
