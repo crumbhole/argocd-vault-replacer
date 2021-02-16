@@ -49,5 +49,5 @@ jobs:
           push: true
           platforms: linux/amd64, linux/arm64
           tags: |
-            ghcr.io/joibel/vault-replacer:${{ $GIT_TAG_NAME  }}
+            ghcr.io/joibel/vault-replacer:$GIT_TAG_NAME
             ghcr.io/joibel/vault-replacer:latest
