@@ -39,4 +39,4 @@ jobs:
           file: ./Dockerfile
           push: true
           platforms: linux/amd64, linux/arm64
-          tags: joibel/vault-replacer:latest
+          tags: ghcr.io/joibel/vault-replacer:latest
