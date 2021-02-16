@@ -33,12 +33,16 @@ func scanFile(path string, info os.FileInfo, err error) error {
 	return nil
 }
 
+func scanDir(path string) error {
+	return filepath.Walk(path, scanFile)
+}
+
 func main() {
 	dir, err := os.Getwd()
 	if err != nil {
 		log.Fatal(err)
 	}
-	err = filepath.Walk(dir, scanFile)
+	err = scanDir(dir)
 	if err != nil {
 		log.Fatal(err)
 	}

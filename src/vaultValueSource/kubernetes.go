@@ -28,7 +28,8 @@ func readJWT() (string, error) {
 
 	f, err := os.Open(tokenFilePath)
 	if err != nil {
-		return "", err
+		log.Printf("Kubernetes authentication - no secret found %v", err)
+		return "", nil
 	}
 	defer f.Close()
 
@@ -57,11 +58,9 @@ func getVaultAuthPath() string {
 func (m *VaultValueSource) tryKubernetesAuth() error {
 	jwt, err := readJWT()
 	if err != nil {
-		log.Printf("Kubernetes authentication - no secret found %v", err)
 		return err
 	}
 	if jwt == "" {
-		log.Printf("Kubernetes authentication no JWT found")
 		return nil
 	}
 	secret, err := m.client.Logical().Write("/auth/kubernetes/login/", map[string]interface{}{

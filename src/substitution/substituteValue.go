@@ -56,7 +56,7 @@ func performModifiers(modifiers []string, input []byte) ([]byte, error) {
 
 // Swaps a <value:...> for the value from the valuesource
 // input should contain no lf/cf
-func (s Substitutor) substituteValueWithError(input []byte) ([]byte, error) {
+func (s *Substitutor) substituteValueWithError(input []byte) ([]byte, error) {
 	reOuter := regexp.MustCompile(`^<\s*vault:\s*([^\!]*[^\s])\s*(\!\s*[^\|]+)?\s*(\|.*)?\s*>$`)
 	pathFound := reOuter.FindSubmatch(input)
 	if pathFound != nil {
@@ -91,11 +91,14 @@ func (s Substitutor) substituteValueWithError(input []byte) ([]byte, error) {
 
 // Swaps a <value:...> for the value from the valuesource
 // input should contain no lf/cf
-func (s Substitutor) substituteValue(input []byte) []byte {
+func (s *Substitutor) substituteValue(input []byte) []byte {
 	res, err := s.substituteValueWithError(input)
 	if err != nil {
-		s.errs = fmt.Errorf("%s\n%s", s.errs, err)
-
+		if s.errs == nil {
+			s.errs = err
+		} else {
+			s.errs = fmt.Errorf("%s\n%s", s.errs, err)
+		}
 	}
 	return res
 }
