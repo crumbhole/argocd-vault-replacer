@@ -1,4 +1,4 @@
-# kustomize build . >../argocd-deploy.yml
+# kustomize build . >argocd-deploy.yml
 #
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
