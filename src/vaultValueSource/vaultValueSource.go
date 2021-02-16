@@ -1,31 +1,37 @@
 package vaultValueSource
 
 import (
+	"fmt"
 	vault "github.com/hashicorp/vault/api"
-	"log"
 )
 
 type VaultValueSource struct {
 	client *vault.Client
 }
 
-func (m *VaultValueSource) initClient() {
+func (m *VaultValueSource) initClient() error {
 	if m.client == nil {
 		client, err := vault.NewClient(nil)
 		if err != nil {
-			log.Fatal(err)
+			return err
 		}
 		m.client = client
-		m.tryKubernetesAuth()
+		err = m.tryKubernetesAuth()
+		if err != nil {
+			return err
+		}
 	}
+	return nil
 }
 
-func (m VaultValueSource) GetValue(path []byte, key []byte) *[]byte {
-	m.initClient()
+func (m VaultValueSource) GetValue(path []byte, key []byte) (*[]byte, error) {
+	err := m.initClient()
+	if err != nil {
+		return nil, err
+	}
 	secret, err := m.client.Logical().Read(string(path))
 	if err != nil {
-		log.Fatal(err)
-		return nil
+		return nil, err
 	}
 
 	// Joy of casting in go
@@ -35,9 +41,9 @@ func (m VaultValueSource) GetValue(path []byte, key []byte) *[]byte {
 			switch dataval := value.(type) {
 			case string:
 				datavalbyte := []byte(dataval)
-				return &datavalbyte
+				return &datavalbyte, nil
 			}
 		}
 	}
-	return nil
+	return nil, fmt.Errorf("Couldn't find %s ! %s", path, key)
 }

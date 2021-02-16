@@ -22,9 +22,13 @@ var subst = Substitutor{source: substval_vs}
 
 func TestBasicFail(t *testing.T) {
 	key := []byte(`blah`)
-	res := subst.substituteValue(key)
+	res, err := subst.substituteValueWithError(key)
 	if !bytes.Equal(res, key) {
 		t.Errorf("blah !-> blah, got %s", res)
+	}
+	expectedError := `Failed to find path for substitution`
+	if err != nil && err.Error() != expectedError {
+		t.Errorf("Expecting %s, got %s", expectedError, err)
 	}
 }
 
@@ -64,7 +68,10 @@ func TestManyGood(t *testing.T) {
 	}
 	for input, expect := range tests {
 		in := []byte(input)
-		res := subst.substituteValue(in)
+		res, err := subst.substituteValueWithError(in)
+		if err != nil {
+			t.Errorf("%s !-> %v, got an error %s", in, expect, err)
+		}
 		if !bytes.Equal(res, []byte(expect)) {
 			t.Errorf("%s !-> %v, got %s", in, expect, res)
 		}
@@ -77,13 +84,29 @@ func TestManyBad(t *testing.T) {
 		`vault:/path/to/thing!key>`,
 		`<ault:/path/to/thing!key>`,
 		`<vault/path/to/thing!key>`,
-		//`<vault:/path/to/thing!key|nonsense>`,
 	}
 	for _, input := range tests {
 		in := []byte(input)
-		res := subst.substituteValue(in)
+		res, err := subst.substituteValueWithError(in)
+		if err != nil {
+			t.Errorf("want %s untouched, got an error %s", in, err)
+		}
 		if !bytes.Equal(res, in) {
 			t.Errorf("want %s untouched but got %s", input, res)
+		}
+	}
+}
+
+func TestBadSubst(t *testing.T) {
+	tests := []string{
+		`<vault:/path/to/thing!key|nonsense>`,
+	}
+	for _, input := range tests {
+		in := []byte(input)
+		_, err := subst.substituteValueWithError(in)
+		expectedError := `Invalid modifier nonsense`
+		if err != nil && err.Error() != expectedError {
+			t.Errorf("Expecting %s, got %s", expectedError, err)
 		}
 	}
 }

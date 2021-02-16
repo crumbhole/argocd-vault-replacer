@@ -5,8 +5,8 @@ import (
 )
 
 // Takes a whole multi-line []byte and finds appropriate subsitutions
-func Substitute(input []byte, source ValueSource) []byte {
+func Substitute(input []byte, source ValueSource) ([]byte, error) {
 	reValue := regexp.MustCompile(`<[ \t]*vault:[^\r\n]+?>`)
 	subst := Substitutor{source: source}
-	return reValue.ReplaceAllFunc(input, subst.substituteValue)
+	return reValue.ReplaceAllFunc(input, subst.substituteValue), subst.errs
 }

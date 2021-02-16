@@ -26,7 +26,10 @@ func TestStringSubst(t *testing.T) {
 	}
 	for input, expect := range tests {
 		in := []byte(input)
-		res := Substitute(in, subst_vs)
+		res, errs := Substitute(in, subst_vs)
+		if errs != nil {
+			t.Errorf("Got unexpected errors in substitute test %s", errs)
+		}
 		if !bytes.Equal(res, []byte(expect)) {
 			t.Errorf("%s !-> %v, got %s", in, expect, res)
 		}

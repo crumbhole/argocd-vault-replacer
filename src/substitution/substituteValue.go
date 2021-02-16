@@ -1,79 +1,101 @@
 package substitution
 
 import (
-	// "fmt"
+	"errors"
+	"fmt"
 	"github.com/joibel/vault-replacer/src/modifier"
-	"log"
 	"net/url"
 	"regexp"
 )
 
 type Substitutor struct {
 	source ValueSource
+	errs   error
 }
 
-func unescape(input []byte) []byte {
+func unescape(input []byte) ([]byte, error) {
 	result, err := url.QueryUnescape(string(input))
 	if err != nil {
-		log.Fatal(err)
-		return input
+		return input, err
 	}
-	return []byte(result)
+	return []byte(result), nil
 }
 
 // Takes the 'dirty' key from the regex and cleans it to the actual key
-func getKey(input []byte) []byte {
+func getKey(input []byte) ([]byte, error) {
 	reKey := regexp.MustCompile(`^!\s*(.*?)\s*$`)
 	keyFound := reKey.FindSubmatch(input)
 	if keyFound == nil {
-		log.Fatal("Key regex failure")
-		return input
+		return nil, errors.New("Key regex failure")
 	}
 	return unescape(keyFound[1])
 }
 
 // Takes the 'dirty' modifiers from the regex and turns them into a list
-func getModifiers(modifiers []byte) []string {
+func getModifiers(modifiers []byte) ([]string, error) {
 	reMod := regexp.MustCompile(`^\|\s*(.*?)\s*$`)
 	reSplit := regexp.MustCompile(`\s*\|\s*`)
 	modsFound := reMod.FindSubmatch(modifiers)
 	if modsFound == nil {
-		log.Fatal("Mods regex failure")
+		return nil, errors.New("Mods regex failure")
 	}
-	return reSplit.Split(string(modsFound[1]), -1)
+	return reSplit.Split(string(modsFound[1]), -1), nil
 }
 
-func performModifiers(modifiers []string, input []byte) []byte {
+func performModifiers(modifiers []string, input []byte) ([]byte, error) {
 	value := input
 	for _, mod := range modifiers {
-		value = modifier.Modify(value, mod)
+		var err error
+		value, err = modifier.Modify(value, mod)
+		if err != nil {
+			return nil, err
+		}
 	}
-	return value
+	return value, nil
+}
+
+// Swaps a <value:...> for the value from the valuesource
+// input should contain no lf/cf
+func (s Substitutor) substituteValueWithError(input []byte) ([]byte, error) {
+	reOuter := regexp.MustCompile(`^<\s*vault:\s*([^\!]*[^\s])\s*(\!\s*[^\|]+)?\s*(\|.*)?\s*>$`)
+	pathFound := reOuter.FindSubmatch(input)
+	if pathFound != nil {
+		if len(pathFound[2]) > 0 {
+			path, err := unescape(pathFound[1])
+			if err != nil {
+				return nil, err
+			}
+			key, err := getKey(pathFound[2])
+			if err != nil {
+				return nil, err
+			}
+			modifiers := pathFound[3]
+			value, err := s.source.GetValue(path, key)
+			if err != nil {
+				return nil, err
+			}
+			if len(modifiers) > 0 {
+				modList, err := getModifiers(modifiers)
+				if err != nil {
+					return nil, err
+				}
+				return performModifiers(modList, *value)
+			}
+			return *value, nil
+		}
+		return nil, errors.New(`Failed to find path for substitution`)
+	}
+	// We pass through things we can't match at all. They shouldn't arrive here.
+	return input, nil
 }
 
 // Swaps a <value:...> for the value from the valuesource
 // input should contain no lf/cf
 func (s Substitutor) substituteValue(input []byte) []byte {
-	reOuter := regexp.MustCompile(`^<\s*vault:\s*([^\!]*[^\s])\s*(\!\s*[^\|]+)?\s*(\|.*)?\s*>$`)
-	pathFound := reOuter.FindSubmatch(input)
-	// for i, found := range pathFound {
-	// 	fmt.Printf("Found[%d] %s\n", i, found)
-	// }
-	if pathFound != nil {
-		if len(pathFound[2]) > 0 {
-			path := unescape(pathFound[1])
-			key := getKey(pathFound[2])
-			modifiers := pathFound[3]
-			value := s.source.GetValue(path, key)
-			if value == nil {
-				log.Printf("Key %v %v lookup failure", path, key)
-				return input
-			}
-			if len(modifiers) > 0 {
-				return performModifiers(getModifiers(pathFound[3]), *value)
-			}
-			return *value
-		}
+	res, err := s.substituteValueWithError(input)
+	if err != nil {
+		s.errs = fmt.Errorf("%s\n%s", s.errs, err)
+
 	}
-	return input
+	return res
 }

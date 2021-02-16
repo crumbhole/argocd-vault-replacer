@@ -1,22 +1,23 @@
 package modifier
 
 import (
-	"log"
+	"fmt"
 )
 
-func getModifier(name string) modifier {
+func getModifier(name string) (modifier, error) {
 	modifiers := map[string]modifier{
 		"base64": base64Modifier{},
 	}
-	println(name)
 	if found, ok := modifiers[name]; ok {
-		return found
+		return found, nil
 	}
-	log.Fatalf("Invalid modifier %s\n", name)
-	return nil
+	return nil, fmt.Errorf("Invalid modifier %s", name)
 }
 
-func Modify(input []byte, name string) []byte {
-	modifier := getModifier(name)
+func Modify(input []byte, name string) ([]byte, error) {
+	modifier, err := getModifier(name)
+	if err != nil {
+		return nil, err
+	}
 	return modifier.modify(input)
 }

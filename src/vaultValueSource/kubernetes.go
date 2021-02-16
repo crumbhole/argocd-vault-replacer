@@ -54,22 +54,23 @@ func getVaultAuthPath() string {
 	return defaultAuthPath
 }
 
-func (m *VaultValueSource) tryKubernetesAuth() {
+func (m *VaultValueSource) tryKubernetesAuth() error {
 	jwt, err := readJWT()
 	if err != nil {
 		log.Printf("Kubernetes authentication - no secret found %v", err)
-		return
+		return err
 	}
 	if jwt == "" {
-		return
+		log.Printf("Kubernetes authentication no JWT found")
+		return nil
 	}
 	secret, err := m.client.Logical().Write("/auth/kubernetes/login/", map[string]interface{}{
 		"role": getVaultRole(),
 		"jwt":  jwt,
 	})
 	if err != nil {
-		log.Fatalf("Kubernetes authentication failed %v", err)
-		return
+		return err
 	}
 	m.client.SetToken(secret.Auth.ClientToken)
+	return nil
 }
