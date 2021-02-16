@@ -23,7 +23,12 @@ It will use the environment variable VAULT_AUTH_PATH to determine the authorisat
 
 Currently the only valid 'URL style' to a path is
 
-\<vault:/store/data/path!key\>
+\<vault:/store/data/path!key|modifier|modifier\>
 
 You must put the ../data/.. into the path. If your path or key contains !, <, > or | you must URL escape it. If your path or key has one or more leading or trailing spaces or tabs you must URL escape them you weirdo.
 
+## Modifiers
+
+You can modify the resulting output with the following modifiers:
+
+* base64: Will base64 encode the secret. Use for data: sections in kubernetes secrets.
