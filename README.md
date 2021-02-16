@@ -50,6 +50,17 @@ metadata:
   namespace: argocd
 ```
 
+You will need to tell Vault about this Service Account and what policy/policies it maps to:
+
+```
+vault write auth/kubernetes/role/argocd \
+        bound_service_account_names=argocd \
+        bound_service_account_namespaces=argocd \
+        policies=argocd \
+        ttl=1h
+```
+This is better documented by Hashicorp themselves, do please refer to their documentation.
+
 Lastly, you will need to modify the argocd-repo-server deployment to use your new serviceAccount, and to allow the serviceAccountToken to automount when the pod starts up. You must patch the deployment with:
 ```
 apiVersion: apps/v1
