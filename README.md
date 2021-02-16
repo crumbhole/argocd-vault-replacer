@@ -42,7 +42,7 @@ You will need to set up the Vault Kubernetes authentication method for your clus
 
 You will need to create a service account. In this example, our service account will be called 'argocd'. Our example creates the serviceAccount in the argocd namespace:
 
-```
+```YAML
 apiVersion: v1
 kind: ServiceAccount
 metadata:
@@ -62,7 +62,7 @@ vault write auth/kubernetes/role/argocd \
 This is better documented by Hashicorp themselves, do please refer to their documentation.
 
 Lastly, you will need to modify the argocd-repo-server deployment to use your new serviceAccount, and to allow the serviceAccountToken to automount when the pod starts up. You must patch the deployment with:
-```
+```YAML
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -77,7 +77,7 @@ spec:
 In order to install the plugin into Argo CD, you can either build your own Argo CD image with the plugin already inside, or make use of an Init Container to pull the binary. Argo CD's documentation provides further information how to do this: https://argoproj.github.io/argo-cd/operator-manual/custom_tools/
 
 An init container manifest will look something like this:
-```
+```YAML
 containers:
 - name: argocd-repo-server
   volumeMounts:
@@ -110,7 +110,7 @@ initContainers:
 ## Plugin Configuration
 After installing the plugin into the /custom-tools/ directory, you need to register it inside the Argo CD config. Declaratively, you can add this to your argocd-cm configmap file:
 
-```
+```YAML
 configManagementPlugins: |-
   - name: vault-replacer
     generate:
@@ -123,7 +123,7 @@ This is documented further in Argo CD's documentation: https://argoproj.github.i
 
 Create a test yaml file that will be used to pull a secret from Vault. The below will look in vault for /path/to/your/secret and will return the key 'secretkey', it will then base64 encode that value. As we are using a Vault KV2 store, we must include ../data/.. in our path:
 
-```
+```YAML
 apiVersion: v1
 kind: Secret
 metadata:
@@ -133,11 +133,11 @@ data:
 type: Opaque
 
 ```
-In this example, we pushed the above to https://github.com/replace-me/vault-replacer-test/vault-replacer-secret.yaml
+In this example, we pushed the above to `https://github.com/replace-me/vault-replacer-test/vault-replacer-secret.yaml`
 
 We then deploy this as an argocd application, making sure we tell the application to use the vault-replacer plugin:
 
-```
+```YAML
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
