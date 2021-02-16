@@ -131,7 +131,6 @@ metadata:
 data:
   sample-secret: <vault:path/data/to/your/secret!secretkey|base64>
 type: Opaque
-
 ```
 In this example, we pushed the above to `https://github.com/replace-me/vault-replacer-test/vault-replacer-secret.yaml`
 
