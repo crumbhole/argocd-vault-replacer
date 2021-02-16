@@ -22,6 +22,7 @@ func TestStringSubst(t *testing.T) {
 		`Hi foo<vault:/path/to/thing
 !foo> <vault:/spacepath/%20!nice>.`: `Hi foo<vault:/path/to/thing
 !foo> time.`,
+		`Hello, my secret is <vault:/path/to/thing!foo|base64>.`: `Hello, my secret is YmFy.`,
 	}
 	for input, expect := range tests {
 		in := []byte(input)

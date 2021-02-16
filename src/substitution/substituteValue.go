@@ -1,6 +1,8 @@
 package substitution
 
 import (
+	// "fmt"
+	"github.com/joibel/vault-replacer/src/modifier"
 	"log"
 	"net/url"
 	"regexp"
@@ -16,21 +18,37 @@ func unescape(input []byte) []byte {
 		log.Fatal(err)
 		return input
 	}
-	//	fmt.Printf("Unescaped /%s/ to /%s/\n", input, result)
 	return []byte(result)
 }
 
 // Takes the 'dirty' key from the regex and cleans it to the actual key
 func getKey(input []byte) []byte {
-	//			fmt.Printf("Key found %d\n", len(pathFound))
 	reKey := regexp.MustCompile(`^!\s*(.*?)\s*$`)
-	// fmt.Printf("Not found //%v//\n", pathFound[2])
 	keyFound := reKey.FindSubmatch(input)
 	if keyFound == nil {
 		log.Fatal("Key regex failure")
 		return input
 	}
 	return unescape(keyFound[1])
+}
+
+// Takes the 'dirty' modifiers from the regex and turns them into a list
+func getModifiers(modifiers []byte) []string {
+	reMod := regexp.MustCompile(`^\|\s*(.*?)\s*$`)
+	reSplit := regexp.MustCompile(`\s*\|\s*`)
+	modsFound := reMod.FindSubmatch(modifiers)
+	if modsFound == nil {
+		log.Fatal("Mods regex failure")
+	}
+	return reSplit.Split(string(modsFound[1]), -1)
+}
+
+func performModifiers(modifiers []string, input []byte) []byte {
+	value := input
+	for _, mod := range modifiers {
+		value = modifier.Modify(value, mod)
+	}
+	return value
 }
 
 // Swaps a <value:...> for the value from the valuesource
@@ -45,15 +63,17 @@ func (s Substitutor) substituteValue(input []byte) []byte {
 		if len(pathFound[2]) > 0 {
 			path := unescape(pathFound[1])
 			key := getKey(pathFound[2])
+			modifiers := pathFound[3]
 			value := s.source.GetValue(path, key)
 			if value == nil {
 				log.Printf("Key %v %v lookup failure", path, key)
 				return input
 			}
+			if len(modifiers) > 0 {
+				return performModifiers(getModifiers(pathFound[3]), *value)
+			}
 			return *value
 		}
-		//		fmt.Printf("No key found %d\n", len(pathFound))
-		return pathFound[1]
 	}
 	return input
 }

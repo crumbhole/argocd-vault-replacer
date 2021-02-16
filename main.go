@@ -2,13 +2,11 @@ package main
 
 import (
 	"bytes"
-	//"flag"
 	"fmt"
-	"io/ioutil"
-	"log"
-	//	vault "github.com/hashicorp/vault/api"
 	"github.com/joibel/vault-replacer/src/substitution"
 	"github.com/joibel/vault-replacer/src/vaultValueSource"
+	"io/ioutil"
+	"log"
 	"os"
 	"path/filepath"
 	"regexp"
