@@ -1,4 +1,4 @@
-module github.com/joibel/vault-replacer
+module github.com/joibel/argocd-vault-replacer
 
 go 1.14
 

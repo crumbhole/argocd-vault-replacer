@@ -99,7 +99,7 @@ After installing the plugin into the /custom-tools/ directory, you need to regis
 configManagementPlugins: |-
   - name: argocd-vault-replacer
     generate:
-      command: ["vault-replacer"]
+      command: ["argocd-vault-replacer"]
 ```
 
 This is documented further in Argo CD's documentation: https://argoproj.github.io/argo-cd/user-guide/config-management-plugins/

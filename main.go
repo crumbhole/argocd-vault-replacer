@@ -2,8 +2,8 @@ package main
 
 import (
 	"fmt"
-	"github.com/joibel/vault-replacer/src/substitution"
-	"github.com/joibel/vault-replacer/src/vaultValueSource"
+	"github.com/joibel/argocd-vault-replacer/src/substitution"
+	"github.com/joibel/argocd-vault-replacer/src/vaultValueSource"
 	"io/ioutil"
 	"log"
 	"os"
@@ -11,7 +11,11 @@ import (
 	"regexp"
 )
 
-func scanFile(path string, info os.FileInfo, err error) error {
+type scanner struct {
+	source substitution.ValueSource
+}
+
+func (s *scanner) scanFile(path string, info os.FileInfo, err error) error {
 	if err != nil {
 		return err
 	}
@@ -24,7 +28,7 @@ func scanFile(path string, info os.FileInfo, err error) error {
 		if err != nil {
 			return err
 		}
-		modifycontents, err := substitution.Substitute(origcontents, vaultValueSource.VaultValueSource{})
+		modifycontents, err := substitution.Substitute(origcontents, s.source)
 		if err != nil {
 			return err
 		}
@@ -33,8 +37,8 @@ func scanFile(path string, info os.FileInfo, err error) error {
 	return nil
 }
 
-func scanDir(path string) error {
-	return filepath.Walk(path, scanFile)
+func (s *scanner) scanDir(path string) error {
+	return filepath.Walk(path, s.scanFile)
 }
 
 func main() {
@@ -42,7 +46,8 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	err = scanDir(dir)
+	s := scanner{source: vaultValueSource.VaultValueSource{}}
+	err = s.scanDir(dir)
 	if err != nil {
 		log.Fatal(err)
 	}

@@ -3,7 +3,7 @@ data:
   configManagementPlugins: |-
     - name: argocd-vault-replacer
       generate:
-        command: ["vault-replacer"]
+        command: ["argocd-vault-replacer"]
 kind: ConfigMap
 metadata:
   labels:

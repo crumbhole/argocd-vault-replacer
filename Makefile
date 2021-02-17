@@ -2,7 +2,7 @@
 
 DEPS := $(shell find . -type f -name "*.go" -printf "%p ")
 
-all: code-vet code-fmt test build/vault-replacer
+all: code-vet code-fmt test build/argocd-vault-replacer
 
 clean:
 	$(RM) -rf build
@@ -10,7 +10,7 @@ clean:
 test:
 	go test ./...
 
-build/vault-replacer: $(DEPS)
+build/argocd-vault-replacer: $(DEPS)
 	mkdir -p build
 	go build -o build ./...
 

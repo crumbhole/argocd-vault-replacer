@@ -6,16 +6,16 @@ import (
 )
 
 type VaultValueSource struct {
-	client *vault.Client
+	Client *vault.Client
 }
 
 func (m *VaultValueSource) initClient() error {
-	if m.client == nil {
+	if m.Client == nil {
 		client, err := vault.NewClient(nil)
 		if err != nil {
 			return err
 		}
-		m.client = client
+		m.Client = client
 		err = m.tryKubernetesAuth()
 		if err != nil {
 			return err
@@ -29,7 +29,7 @@ func (m VaultValueSource) GetValue(path []byte, key []byte) (*[]byte, error) {
 	if err != nil {
 		return nil, err
 	}
-	secret, err := m.client.Logical().Read(string(path))
+	secret, err := m.Client.Logical().Read(string(path))
 	if err != nil {
 		return nil, err
 	}
