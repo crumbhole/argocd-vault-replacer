@@ -1,5 +1,5 @@
 # argocd-vault-replacer
-An [Argo CD](https://argoproj.github.io/argo-cd/) plugin to replace placeholders in Kubernetes manifests with secrets stored in [Hashicorp Vault](https://www.vaultproject.io/). The binary will scan the current directory recursively for any .yaml (or .yml if you're so inclined) files and attempt to replaces strings of the form \<vault:/store/data/path!key\> with those obtained from a Vault kv2 store.
+An [Argo CD](https://argoproj.github.io/argo-cd/) plugin to replace placeholders in Kubernetes manifests with secrets stored in [Hashicorp Vault](https://www.vaultproject.io/). The binary will scan the current directory recursively for any .yaml (or .yml if you're so inclined) files and attempt to replaces strings of the form \<vault:/store/data/path~key\> with those obtained from a Vault kv2 store.
 
 <img src="assets/images/argocd-vault-replacer-diagram.png">
 
@@ -65,11 +65,12 @@ volumes:
   emptyDir: {}
 initContainers:
 - name: argocd-vault-replacer-download
-  image: ghcr.io/joibel/vault-replacer:0.3.5
+  image: ghcr.io/joibel/vault-replacer:latest
   volumeMounts:
     - mountPath: /custom-tools
       name: custom-tools
 ```
+For production installations, we strongly recommend you to not pull the :latest image tag, but instead pin to a fixed version.
 
 The above references a Kubernetes secret called "argocd-vault-replacer-credentials". We use this to pass through the mandatory VAULT_ADDR environment variable. We could also use it to pass through optional variables too
 ```YAML
@@ -114,7 +115,7 @@ kind: Secret
 metadata:
   name: argocd-vault-replacer-secret
 data:
-  sample-secret: <vault:path/data/to/your/secret!secretkey|base64>
+  sample-secret: <vault:path/data/to/your/secret~secretkey|base64>
 type: Opaque
 ```
 In this example, we pushed the above to `https://github.com/replace-me/vault-replacer-test/vault-replacer-secret.yaml`
@@ -164,9 +165,9 @@ It will use the environment variable VAULT_AUTH_PATH to determine the authorizat
 
 Currently the only valid 'URL style' to a path is
 
-`<vault:/store/data/path!key|modifier|modifier>`
+`<vault:/store/data/path~key|modifier|modifier>`
 
-You must put ..`/data/`.. into the path. If your path or key contains `!`, `<`, `>` or `|` you must URL escape it. If your path or key has one or more leading or trailing spaces or tabs you must URL escape them you weirdo.
+You must put ..`/data/`.. into the path. If your path or key contains `~`, `<`, `>` or `|` you must URL escape it. If your path or key has one or more leading or trailing spaces or tabs you must URL escape them you weirdo.
 
 ## Modifiers
 
