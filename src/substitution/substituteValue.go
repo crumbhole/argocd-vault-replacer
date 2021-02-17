@@ -23,7 +23,7 @@ func unescape(input []byte) ([]byte, error) {
 
 // Takes the 'dirty' key from the regex and cleans it to the actual key
 func getKey(input []byte) ([]byte, error) {
-	reKey := regexp.MustCompile(`^!\s*(.*?)\s*$`)
+	reKey := regexp.MustCompile(`^~\s*(.*?)\s*$`)
 	keyFound := reKey.FindSubmatch(input)
 	if keyFound == nil {
 		return nil, errors.New("Key regex failure")
@@ -57,7 +57,7 @@ func performModifiers(modifiers []string, input []byte) ([]byte, error) {
 // Swaps a <value:...> for the value from the valuesource
 // input should contain no lf/cf
 func (s *Substitutor) substituteValueWithError(input []byte) ([]byte, error) {
-	reOuter := regexp.MustCompile(`^<\s*vault:\s*([^\!]*[^\s])\s*(\!\s*[^\|]+)?\s*(\|.*)?\s*>$`)
+	reOuter := regexp.MustCompile(`^<\s*vault:\s*([^\~]*[^\s])\s*(\~\s*[^\|]+)?\s*(\|.*)?\s*>$`)
 	pathFound := reOuter.FindSubmatch(input)
 	if pathFound != nil {
 		if len(pathFound[2]) > 0 {
