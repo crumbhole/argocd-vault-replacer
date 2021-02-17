@@ -66,7 +66,7 @@ volumes:
 - name: custom-tools
   emptyDir: {}
 initContainers:
-- name: argocd-vault-replacer-download
+- name: argocd-vault-replacer-install
   image: ghcr.io/joibel/argocd-vault-replacer
   imagePullPolicy: Always
   volumeMounts:
