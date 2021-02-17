@@ -4,6 +4,10 @@ data:
     - name: argocd-vault-replacer
       generate:
         command: ["argocd-vault-replacer"]
+    - name: kustomize-argocd-vault-replacer
+      generate:
+        command: ["sh", "-c"]
+        args: ["kustomize build . | argocd-vault-replacer"]
 kind: ConfigMap
 metadata:
   labels:

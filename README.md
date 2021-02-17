@@ -102,6 +102,10 @@ configManagementPlugins: |-
   - name: argocd-vault-replacer
     generate:
       command: ["argocd-vault-replacer"]
+  - name: kustomize-argocd-vault-replacer
+    generate:
+      command: ["sh", "-c"]
+      args: ["kustomize build . | argocd-vault-replacer"]
 ```
 
 This is documented further in Argo CD's documentation: https://argoproj.github.io/argo-cd/user-guide/config-management-plugins/
