@@ -1,7 +1,6 @@
 package main
 
 import (
-	"bytes"
 	"fmt"
 	"github.com/joibel/vault-replacer/src/substitution"
 	"github.com/joibel/vault-replacer/src/vaultValueSource"
@@ -12,10 +11,9 @@ import (
 	"regexp"
 )
 
-func updateFile(path string, info os.FileInfo, err error) error {
+func scanFile(path string, info os.FileInfo, err error) error {
 	if err != nil {
-		log.Print(err)
-		return nil
+		return err
 	}
 	if info.IsDir() {
 		return nil
@@ -24,23 +22,19 @@ func updateFile(path string, info os.FileInfo, err error) error {
 	if fileRegexp.MatchString(path) {
 		origcontents, err := ioutil.ReadFile(path)
 		if err != nil {
-			fmt.Println("GGFile reading error", err)
 			return err
 		}
-		modifycontents := substitution.Substitute(origcontents, vaultValueSource.VaultValueSource{})
+		modifycontents, err := substitution.Substitute(origcontents, vaultValueSource.VaultValueSource{})
 		if err != nil {
-			fmt.Println("Substitution error", err)
 			return err
 		}
-		if !bytes.Equal(modifycontents, origcontents) {
-			err = ioutil.WriteFile(path, modifycontents, info.Mode())
-			if err != nil {
-				fmt.Println("Couldn't modify file", err)
-				return err
-			}
-		}
+		fmt.Printf("---\n%s\n", modifycontents)
 	}
 	return nil
+}
+
+func scanDir(path string) error {
+	return filepath.Walk(path, scanFile)
 }
 
 func main() {
@@ -48,7 +42,7 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	err = filepath.Walk(dir, updateFile)
+	err = scanDir(dir)
 	if err != nil {
 		log.Fatal(err)
 	}

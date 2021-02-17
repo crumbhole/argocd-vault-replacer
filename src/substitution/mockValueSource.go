@@ -1,7 +1,7 @@
 package substitution
 
 import (
-	//	"fmt"
+	"fmt"
 	"strings"
 )
 
@@ -14,12 +14,10 @@ type mockValueSource struct {
 	values map[pathKeyTuple][]byte
 }
 
-func (m mockValueSource) GetValue(path []byte, key []byte) *[]byte {
+func (m mockValueSource) GetValue(path []byte, key []byte) (*[]byte, error) {
 	var pk = pathKeyTuple{strings.TrimSuffix(string(path), `/`), string(key)}
-	//	fmt.Printf("Looking up %v\n", pk)
 	if val, ok := m.values[pk]; ok {
-		//	fmt.Printf("Mock Lookup found %s\n", val)
-		return &val
+		return &val, nil
 	}
-	return nil
+	return nil, fmt.Errorf("Couldn't find %s ! %s", path, key)
 }
