@@ -1,5 +1,4 @@
 # Downloads the plugin and moves it to /custom-tools, which is then mounted on the argocd-repo-server
-# For production, we strongly recommend you do not use the :latest image tag, but instead pin to a fixed version.
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -21,7 +20,8 @@ spec:
         emptyDir: {}
       initContainers:
       - name: argocd-vault-replacer-download
-        image: ghcr.io/joibel/vault-replacer:latest
+        image: ghcr.io/joibel/argocd-vault-replacer:stable
+        imagePullPolicy: Always
         volumeMounts:
           - mountPath: /custom-tools
             name: custom-tools

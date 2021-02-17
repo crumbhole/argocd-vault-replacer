@@ -8,7 +8,7 @@ An [Argo CD](https://argoproj.github.io/argo-cd/) plugin to replace placeholders
 - Changes to secrets in Vault will automatically propagate to your cluster.
 
 # Installing as an Argo CD Plugin
-You can use [our Kustomization example](https://github.com/Joibel/vault-replacer/tree/main/examples/kustomize/argocd) to install Argo CD and to bootstrap the installation of the plugin at the same time. However the steps below will detail what is required should you wish to do things more manually. The Vault authentication setup cannot be done with Kustomize and must be done manually.
+You can use [our Kustomization example](https://github.com/Joibel/argocd-vault-replacer/tree/main/examples/kustomize/argocd) to install Argo CD and to bootstrap the installation of the plugin at the same time. However the steps below will detail what is required should you wish to do things more manually. The Vault authentication setup cannot be done with Kustomize and must be done manually.
 
 ## Vault Kubernetes Authentication
 You will need to set up the Vault Kubernetes authentication method for your cluster.
@@ -65,13 +65,12 @@ volumes:
   emptyDir: {}
 initContainers:
 - name: argocd-vault-replacer-download
-  image: ghcr.io/joibel/vault-replacer:latest
+  image: ghcr.io/joibel/argocd-vault-replacer
+  imagePullPolicy: Always
   volumeMounts:
     - mountPath: /custom-tools
       name: custom-tools
 ```
-For production installations, we strongly recommend you to not pull the :latest image tag, but instead pin to a fixed version.
-
 The above references a Kubernetes secret called "argocd-vault-replacer-credentials". We use this to pass through the mandatory VAULT_ADDR environment variable. We could also use it to pass through optional variables too
 ```YAML
 apiVersion: v1
@@ -118,7 +117,7 @@ data:
   sample-secret: <vault:path/data/to/your/secret~secretkey|base64>
 type: Opaque
 ```
-In this example, we pushed the above to `https://github.com/replace-me/vault-replacer-test/vault-replacer-secret.yaml`
+In this example, we pushed the above to `https://github.com/replace-me/argocd-vault-replacer-test/argocd-vault-replacer-secret.yaml`
 
 We then deploy this as an Argo CD application, making sure we tell the application to use the argocd-vault-replacer plugin:
 
@@ -145,7 +144,7 @@ spec:
     targetRevision: HEAD
 ```
 
-There are further examples to use for testing in the [example-manifests directory](https://github.com/Joibel/vault-replacer/tree/main/examples/example-manifests)).
+There are further examples to use for testing in the [example-manifests directory](https://github.com/Joibel/argocd-vault-replacer/tree/main/examples/example-manifests)).
 ## A deep-dive on authentication
 
 The tool only has two methods of authenticating with Vault:

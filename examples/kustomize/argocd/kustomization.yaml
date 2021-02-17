@@ -5,7 +5,7 @@ kind: Kustomization
 namespace: argocd
 
 resources:
-- https://raw.githubusercontent.com/argoproj/argo-cd/v1.8.3/manifests/ha/install.yaml
+- https://raw.githubusercontent.com/argoproj/argo-cd/v1.8.4/manifests/ha/install.yaml
 - argocd-vault-replacer-secret.yml
 - serviceaccount.yml
 
