@@ -1,7 +1,7 @@
 # argocd-vault-replacer
 An [Argo CD](https://argoproj.github.io/argo-cd/) plugin to replace placeholders in Kubernetes manifests with secrets stored in [Hashicorp Vault](https://www.vaultproject.io/)
 
-<img src="assets/images/argocd-vault-replacer-diagram.svg">
+<img src="assets/images/argocd-vault-replacer-diagram.png">
 
 ## Why?
 - Allows you to invest in Git Ops without compromising secret security.
