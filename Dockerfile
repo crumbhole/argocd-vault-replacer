@@ -1,6 +1,8 @@
 FROM golang:1.15.8 as builder
 ADD . /build
 WORKDIR /build
+RUN go vet ./...
+RUN go test ./...
 RUN go build -o build/vault-replacer
 
 FROM alpine as putter
