@@ -1,0 +1,8 @@
+# An example demonstrating how Vault paths can be completely different in the same configmap.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: argocd-vault-replacer-example-configmap-multi
+data:
+  sample-secret-one: <vault:path/data/to/your/secret!secretkey>
+  sample-secret-two: <vault:anoth/path/data/to/yet/another/secret!andADifferentKeyName>

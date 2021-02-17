@@ -1,0 +1,7 @@
+# The below will look in Vault for /path/to/your/secret and will return the key 'secretkey'.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: argocd-vault-replacer-example-configmap
+data:
+  sample-secret: <vault:path/data/to/your/secret!secretkey>
