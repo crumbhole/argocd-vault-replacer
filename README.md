@@ -1,5 +1,5 @@
 # argocd-vault-replacer
-An [Argo CD](https://argoproj.github.io/argo-cd/) plugin to replace placeholders in Kubernetes manifests with secrets stored in [Hashicorp Vault](https://www.vaultproject.io/)
+An [Argo CD](https://argoproj.github.io/argo-cd/) plugin to replace placeholders in Kubernetes manifests with secrets stored in [Hashicorp Vault](https://www.vaultproject.io/). The binary will scan the current directory recursively for any .yaml (or .yml if you're so inclined) files and attempt to replaces strings of the form \<vault:/store/data/path!key\> with those obtained from a Vault kv2 store.
 
 <img src="assets/images/argocd-vault-replacer-diagram.png">
 
@@ -87,7 +87,7 @@ Environment Variables:
 | Environment Variable Name | Purpose                                                                                                                               | Example                           | Mandatory? |
 |-------------------------- |-------------------------------------------------------------------------------------------------------------------------------------- |---------------------------------- |----------- |
 | VAULT_ADDR                | Provides argocd-vault-replacer with the URL to your Hashicorp Vault instance.                                                         | https://vault.examplecompany.biz  | Y
-| VAULT_TOKEN               | A valid vault authentication token. This should only be used for debugging.                                                           | s.LLijB190n3c8s4fiSuvTdVNM        | N
+| VAULT_TOKEN               | A valid Vault authentication token. This should only be used for debugging.                                                           | s.LLijB190n3c8s4fiSuvTdVNM        | N
 | VAULT_ROLE                | The name of the role for the VAULT_TOKEN. This defaults to 'argocd'.                                                                  | argocd-role                       | N
 | VAULT_AUTH_PATH           | Determines the authorization path for Kubernetes authentication. This defaults to 'kubernetes' so will probably not need configuring. | kubernetes                        | N
 
@@ -106,7 +106,7 @@ This is documented further in Argo CD's documentation: https://argoproj.github.i
 
 ## Testing
 
-Create a test yaml file that will be used to pull a secret from Vault. The below will look in vault for /path/to/your/secret and will return the key 'secretkey', it will then base64 encode that value. As we are using a Vault KV2 store, we must include ../data/.. in our path:
+Create a test yaml file that will be used to pull a secret from Vault. The below will look in Vault for /path/to/your/secret and will return the key 'secretkey', it will then base64 encode that value. As we are using a Vault kv2 store, we must include ../data/.. in our path:
 
 ```YAML
 apiVersion: v1
@@ -119,7 +119,7 @@ type: Opaque
 ```
 In this example, we pushed the above to `https://github.com/replace-me/vault-replacer-test/vault-replacer-secret.yaml`
 
-We then deploy this as an argocd application, making sure we tell the application to use the argocd-vault-replacer plugin:
+We then deploy this as an Argo CD application, making sure we tell the application to use the argocd-vault-replacer plugin:
 
 ```YAML
 apiVersion: argoproj.io/v1alpha1
@@ -143,17 +143,9 @@ spec:
       name: argocd-vault-replacer
     targetRevision: HEAD
 ```
+## A deep-dive on authentication
 
-
-
-
-
-
-Will scan the current directory recursively for any .yaml (or .yml if you're so inclined) files and attempt to replaces strings of the form \<vault:/store/data/path!key\> with those obtained from a vault kv2 store. It is intended that this is run from within your argocd-server pod as a plugin.
-
-## Authentication
-
-It only has two methods of authenticating with vault:
+The tool only has two methods of authenticating with Vault:
 * Using kubernetes authentication method https://github.com/hashicorp/vault/blob/master/website/content/docs/auth/kubernetes.mdx
 * Using a token, which is only intended for debugging
 
