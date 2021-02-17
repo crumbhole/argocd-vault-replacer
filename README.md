@@ -112,7 +112,7 @@ After installing the plugin into the /custom-tools/ directory, you need to regis
 
 ```YAML
 configManagementPlugins: |-
-  - name: vault-replacer
+  - name: argocd-vault-replacer
     generate:
       command: ["vault-replacer"]
 ```
@@ -127,24 +127,24 @@ Create a test yaml file that will be used to pull a secret from Vault. The below
 apiVersion: v1
 kind: Secret
 metadata:
-  name: vault-replacer-secret
+  name: argocd-vault-replacer-secret
 data:
   sample-secret: <vault:path/data/to/your/secret!secretkey|base64>
 type: Opaque
 ```
 In this example, we pushed the above to `https://github.com/replace-me/vault-replacer-test/vault-replacer-secret.yaml`
 
-We then deploy this as an argocd application, making sure we tell the application to use the vault-replacer plugin:
+We then deploy this as an argocd application, making sure we tell the application to use the argocd-vault-replacer plugin:
 
 ```YAML
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: vault-replacer-test
+  name: argocd-vault-replacer-test
 spec:
   destination:
     server: 'https://kubernetes.default.svc'
-    namespace: vault-replacer-test
+    namespace: argocd-vault-replacer-test
   syncPolicy:
     automated:
       prune: true
@@ -153,8 +153,9 @@ spec:
       - CreateNamespace=true
   source:
     repoURL: 'https://github.com/replace-me'
-    path: vault-replacer-test
+    path: argocd-vault-replacer-test
     plugin:
-      name: vault-replacer
+      name: argocd-vault-replacer
     targetRevision: HEAD
 ```
+    
