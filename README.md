@@ -106,7 +106,7 @@ This is documented further in Argo CD's documentation: https://argoproj.github.i
 
 ## Testing
 
-Create a test yaml file that will be used to pull a secret from Vault. The below will look in Vault for /path/to/your/secret and will return the key 'secretkey', it will then base64 encode that value. As we are using a Vault kv2 store, we must include ../data/.. in our path:
+Create a test yaml file that will be used to pull a secret from Vault. The below will look in Vault for /path/to/your/secret and will return the key 'secretkey', it will then base64 encode that value. As we are using a Vault kv2 store, we must include ..`/data/`.. in our path:
 
 ```YAML
 apiVersion: v1
@@ -156,15 +156,15 @@ It will attempt to use kubernetes authentication through an appropriate service 
 To use the kubernetes service account your pod should be running with the appropriate service account, and will try to obtain the JWT token from /var/run/secrets/kubernetes.io/serviceaccount/token which is the default location.
 
 It will use the environment variable VAULT_ROLE as the name of the role for that token, defaulting to "argocd".
-It will use the environment variable VAULT_AUTH_PATH to determine the authorisation path for kubernetes authentication. This defaults in this tool and in vault to "kubernetes" so will probably not need configuring.
+It will use the environment variable VAULT_AUTH_PATH to determine the authorization path for kubernetes authentication. This defaults in this tool and in vault to "kubernetes" so will probably not need configuring.
 
 ## Valid vault paths
 
 Currently the only valid 'URL style' to a path is
 
-\<vault:/store/data/path!key|modifier|modifier\>
+`<vault:/store/data/path!key|modifier|modifier>`
 
-You must put ../data/.. into the path. If your path or key contains !, <, > or | you must URL escape it. If your path or key has one or more leading or trailing spaces or tabs you must URL escape them you weirdo.
+You must put ..`/data/`.. into the path. If your path or key contains `!`, `<`, `>` or `|` you must URL escape it. If your path or key has one or more leading or trailing spaces or tabs you must URL escape them you weirdo.
 
 ## Modifiers
 
