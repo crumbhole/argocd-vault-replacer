@@ -33,15 +33,20 @@ func (m VaultValueSource) GetValue(path []byte, key []byte) (*[]byte, error) {
 	if err != nil {
 		return nil, err
 	}
+	if secret == nil {
+		return nil, fmt.Errorf("Unexpectedly couldn't find %s ! %s", path, key)
+	}
 
 	// Joy of casting in go
-	switch data := secret.Data["data"].(type) {
-	case map[string]interface{}:
-		if value, found := data[string(key)]; found {
-			switch dataval := value.(type) {
-			case string:
-				datavalbyte := []byte(dataval)
-				return &datavalbyte, nil
+	if _, ok := secret.Data["data"]; ok {
+		switch data := secret.Data["data"].(type) {
+		case map[string]interface{}:
+			if value, found := data[string(key)]; found {
+				switch dataval := value.(type) {
+				case string:
+					datavalbyte := []byte(dataval)
+					return &datavalbyte, nil
+				}
 			}
 		}
 	}
