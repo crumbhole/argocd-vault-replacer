@@ -1,38 +1,11 @@
-# vault-replacer
+# argocd-vault-replacer
+An [Argo CD](https://argoproj.github.io/argo-cd/) plugin to replace placeholders in Kubernetes manifests with secrets stored in [Hashicorp Vault](https://www.vaultproject.io/)
 
-Mainly intended as a plugin for [Argo CD](https://argoproj.github.io/argo-cd/)
+<img src="assets/images/argocd-vault-replacer-diagram.svg">
 
-Will scan the current directory recursively for any .yaml (or .yml if you're so inclined) files and attempt to replaces strings of the form \<vault:/store/data/path!key\> with those obtained from a vault kv2 store. It is intended that this is run from within your argocd-server pod as a plugin.
-
-## Authentication
-
-It only has two methods of authenticating with vault:
-* Using kubernetes authentication method https://github.com/hashicorp/vault/blob/master/website/content/docs/auth/kubernetes.mdx
-* Using a token, which is only intended for debugging
-
-Both methods expect the environment variable VAULT_ADDR to be set.
-
-It will attempt to use kubernetes authentication through an appropriate service account first, and complain if that doesn't work. It will then use VAULT_TOKEN which should be a valid token. This tool has no way of renewing a token or obtaining one other than through a kubernetes service account.
-
-To use the kubernetes service account your pod should be running with the appropriate service account, and will try to obtain the JWT token from /var/run/secrets/kubernetes.io/serviceaccount/token which is the default location.
-
-It will use the environment variable VAULT_ROLE as the name of the role for that token, defaulting to "argocd".
-It will use the environment variable VAULT_AUTH_PATH to determine the authorisation path for kubernetes authentication. This defaults in this tool and in vault to "kubernetes" so will probably not need configuring.
-
-## Valid vault paths
-
-Currently the only valid 'URL style' to a path is
-
-\<vault:/store/data/path!key|modifier|modifier\>
-
-You must put ../data/.. into the path. If your path or key contains !, <, > or | you must URL escape it. If your path or key has one or more leading or trailing spaces or tabs you must URL escape them you weirdo.
-
-## Modifiers
-
-You can modify the resulting output with the following modifiers:
-
-* base64: Will base64 encode the secret. Use for data: sections in kubernetes secrets.
-
+## Why?
+- Allows you to invest in Git Ops without compromising secret security.
+- Changes to secrets in Vault will automatically propagate to your cluster.
 
 # Installing as an Argo CD Plugin
 You can use [our Kustomization example](https://github.com/Joibel/vault-replacer/tree/main/examples/kustomize/argocd) to install Argo CD and to bootstrap the installation of the plugin at the same time. However the steps below will detail what is required should you wish to do things more manually. The Vault authentication setup cannot be done with Kustomize and must be done manually.
@@ -76,14 +49,14 @@ spec:
 ## Plugin Installation
 In order to install the plugin into Argo CD, you can either build your own Argo CD image with the plugin already inside, or make use of an Init Container to pull the binary. Argo CD's documentation provides further information how to do this: https://argoproj.github.io/argo-cd/operator-manual/custom_tools/
 
-An init container manifest will look something like this:
+We offer a pre-built init container that moves the binary into /custom-tools on startup, so an init container manifest will look something like this:
 ```YAML
 containers:
 - name: argocd-repo-server
   volumeMounts:
   - name: custom-tools
-    mountPath: /usr/local/bin/vault-replacer
-    subPath: vault-replacer
+    mountPath: /usr/local/bin/argocd-vault-replacer
+    subPath: argocd-vault-replacer
   envFrom:
     - secretRef:
         name: argocd-vault-replacer-credentials
@@ -91,21 +64,33 @@ volumes:
 - name: custom-tools
   emptyDir: {}
 initContainers:
-- name: vault-replacer-download
-  image: alpine
-  command: [sh, -c]
-  args:
-    - wget https://github.com/Joibel/vault-replacer/releases/download/0.2/vault-replacer-0.2-linux-amd64.tar.gz
-
-      tar -xvzf vault-replacer-0.2-linux-amd64.tar.gz
-    
-      chmod +x vault-replacer
-      
-      mv vault-replacer /custom-tools/
+- name: argocd-vault-replacer-download
+  image: ghcr.io/joibel/vault-replacer:0.3.5
   volumeMounts:
     - mountPath: /custom-tools
       name: custom-tools
 ```
+
+The above references a Kubernetes secret called "argocd-vault-replacer-credentials". We use this to pass through the mandatory VAULT_ADDR environment variable. We could also use it to pass through optional variables too
+```YAML
+apiVersion: v1
+data:
+  VAULT_ADDR: aHR0cHM6Ly92YXVsdC5leGFtcGxlLmJpeg==
+kind: Secret
+metadata:
+  name: argocd-vault-replacer-secret
+type: Opaque
+```
+
+Environment Variables:
+
+| Environment Variable Name | Purpose                                                                                                                               | Example                           | Mandatory? |
+|-------------------------- |-------------------------------------------------------------------------------------------------------------------------------------- |---------------------------------- |----------- |
+| VAULT_ADDR                | Provides argocd-vault-replacer with the URL to your Hashicorp Vault instance.                                                         | https://vault.examplecompany.biz  | Y
+| VAULT_TOKEN               | A valid vault authentication token. This should only be used for debugging.                                                           | s.LLijB190n3c8s4fiSuvTdVNM        | N
+| VAULT_ROLE                | The name of the role for the VAULT_TOKEN. This defaults to 'argocd'.                                                                  | argocd-role                       | N
+| VAULT_AUTH_PATH           | Determines the authorization path for Kubernetes authentication. This defaults to 'kubernetes' so will probably not need configuring. | kubernetes                        | N
+
 
 ## Plugin Configuration
 After installing the plugin into the /custom-tools/ directory, you need to register it inside the Argo CD config. Declaratively, you can add this to your argocd-cm configmap file:
@@ -158,4 +143,39 @@ spec:
       name: argocd-vault-replacer
     targetRevision: HEAD
 ```
-    
+
+
+
+
+
+
+Will scan the current directory recursively for any .yaml (or .yml if you're so inclined) files and attempt to replaces strings of the form \<vault:/store/data/path!key\> with those obtained from a vault kv2 store. It is intended that this is run from within your argocd-server pod as a plugin.
+
+## Authentication
+
+It only has two methods of authenticating with vault:
+* Using kubernetes authentication method https://github.com/hashicorp/vault/blob/master/website/content/docs/auth/kubernetes.mdx
+* Using a token, which is only intended for debugging
+
+Both methods expect the environment variable VAULT_ADDR to be set.
+
+It will attempt to use kubernetes authentication through an appropriate service account first, and complain if that doesn't work. It will then use VAULT_TOKEN which should be a valid token. This tool has no way of renewing a token or obtaining one other than through a kubernetes service account.
+
+To use the kubernetes service account your pod should be running with the appropriate service account, and will try to obtain the JWT token from /var/run/secrets/kubernetes.io/serviceaccount/token which is the default location.
+
+It will use the environment variable VAULT_ROLE as the name of the role for that token, defaulting to "argocd".
+It will use the environment variable VAULT_AUTH_PATH to determine the authorisation path for kubernetes authentication. This defaults in this tool and in vault to "kubernetes" so will probably not need configuring.
+
+## Valid vault paths
+
+Currently the only valid 'URL style' to a path is
+
+\<vault:/store/data/path!key|modifier|modifier\>
+
+You must put ../data/.. into the path. If your path or key contains !, <, > or | you must URL escape it. If your path or key has one or more leading or trailing spaces or tabs you must URL escape them you weirdo.
+
+## Modifiers
+
+You can modify the resulting output with the following modifiers:
+
+* base64: Will base64 encode the secret. Use for data: sections in kubernetes secrets.
