@@ -1,7 +1,7 @@
 apiVersion: v1
 data:
   configManagementPlugins: |-
-    - name: vault-replacer
+    - name: argocd-vault-replacer
       generate:
         command: ["vault-replacer"]
 kind: ConfigMap

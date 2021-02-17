@@ -6,7 +6,7 @@ namespace: argocd
 
 resources:
 - https://raw.githubusercontent.com/argoproj/argo-cd/v1.8.3/manifests/ha/install.yaml
-- vault-replacer-secret.yml
+- argocd-vault-replacer-secret.yml
 - serviceaccount.yml
 
 patches:
@@ -14,7 +14,7 @@ patches:
   target:
     kind: ConfigMap
     name: argocd-cm
-- path: vault-replacer.yml
+- path: argocd-vault-replacer.yml
   target:
     kind: Deployment
     name: argocd-repo-server
