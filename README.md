@@ -166,7 +166,7 @@ Currently the only valid 'URL style' to a path is
 
 `<vault:/store/data/path!key|modifier|modifier>`
 
-You must put ..`/data/`.. into the path. If your path or key contains `!`, `<`, `>` or `|` you must URL escape it. If your path or key has one or more leading or trailing spaces or tabs you must URL escape them you weirdo.
+You must put ..`/data/`.. into the path. If your path or key contains `~`, `<`, `>` or `|` you must URL escape it. If your path or key has one or more leading or trailing spaces or tabs you must URL escape them you weirdo.
 
 ## Modifiers
 
