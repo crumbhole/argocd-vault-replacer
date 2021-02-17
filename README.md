@@ -143,6 +143,8 @@ spec:
       name: argocd-vault-replacer
     targetRevision: HEAD
 ```
+
+There are further examples to use for testing in the [example-manifests directory](https://github.com/Joibel/vault-replacer/tree/main/examples/example-manifests)).
 ## A deep-dive on authentication
 
 The tool only has two methods of authenticating with Vault:
