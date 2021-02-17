@@ -110,6 +110,10 @@ configManagementPlugins: |-
 
 This is documented further in Argo CD's documentation: https://argoproj.github.io/argo-cd/user-guide/config-management-plugins/
 
+argo-vault-replacer as a plugin will only work on a directory full of straight .yaml files.
+
+kustomize-argo-vault-replacer as a plugin will take the output of kustomize and then do vault-replacement on those files. Note: This won't allow you to use the argo application kustomization options, it just runs a straight kustomize.
+
 ## Testing
 
 Create a test yaml file that will be used to pull a secret from Vault. The below will look in Vault for /path/to/your/secret and will return the key 'secretkey', it will then base64 encode that value. As we are using a Vault kv2 store, we must include ..`/data/`.. in our path:
