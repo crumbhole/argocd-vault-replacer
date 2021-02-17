@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
 	"github.com/joibel/argocd-vault-replacer/src/substitution"
 	"github.com/joibel/argocd-vault-replacer/src/vaultValueSource"
@@ -15,6 +16,15 @@ type scanner struct {
 	source substitution.ValueSource
 }
 
+func (s *scanner) process(input []byte) error {
+	modifiedcontents, err := substitution.Substitute(input, s.source)
+	if err != nil {
+		return err
+	}
+	fmt.Printf("---\n%s\n", modifiedcontents)
+	return nil
+}
+
 func (s *scanner) scanFile(path string, info os.FileInfo, err error) error {
 	if err != nil {
 		return err
@@ -24,15 +34,14 @@ func (s *scanner) scanFile(path string, info os.FileInfo, err error) error {
 	}
 	fileRegexp := regexp.MustCompile(`\.ya?ml$`)
 	if fileRegexp.MatchString(path) {
-		origcontents, err := ioutil.ReadFile(path)
+		filecontents, err := ioutil.ReadFile(path)
 		if err != nil {
 			return err
 		}
-		modifycontents, err := substitution.Substitute(origcontents, s.source)
+		err = s.process(filecontents)
 		if err != nil {
 			return err
 		}
-		fmt.Printf("---\n%s\n", modifycontents)
 	}
 	return nil
 }
@@ -42,13 +51,26 @@ func (s *scanner) scanDir(path string) error {
 }
 
 func main() {
-	dir, err := os.Getwd()
-	if err != nil {
-		log.Fatal(err)
-	}
+	stat, _ := os.Stdin.Stat()
 	s := scanner{source: vaultValueSource.VaultValueSource{}}
-	err = s.scanDir(dir)
-	if err != nil {
-		log.Fatal(err)
+	if (stat.Mode() & os.ModeCharDevice) == 0 {
+		reader := bufio.NewReader(os.Stdin)
+		filecontents, err := ioutil.ReadAll(reader)
+		if err != nil {
+			log.Fatal(err)
+		}
+		err = s.process(filecontents)
+		if err != nil {
+			log.Fatal(err)
+		}
+	} else {
+		dir, err := os.Getwd()
+		if err != nil {
+			log.Fatal(err)
+		}
+		err = s.scanDir(dir)
+		if err != nil {
+			log.Fatal(err)
+		}
 	}
 }
