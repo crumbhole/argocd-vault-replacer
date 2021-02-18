@@ -1,0 +1,6 @@
+apiVersion: v2
+name: argocd-vault-replacer-example
+description: A Helm chart to demonstrate how argocd-vault-replacer can work with Helm
+type: application
+version: 0.0.1
+appVersion: 0.0.1
