@@ -2,6 +2,8 @@ name: Release Helm Chart
 
 on:
   push:
+    branches:
+      - main
     paths:
       - 'charts/argocd-vault-replacer-example-chart/Chart.yaml'
 
