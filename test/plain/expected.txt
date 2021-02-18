@@ -15,4 +15,6 @@ type: Opaque
 data:
   foo: aGk=
   bar: ZXhhbXBsZQ==
+  bar: "ZXhhbXBsZQ=="
+  bar: 'ZXhhbXBsZQ=='
 

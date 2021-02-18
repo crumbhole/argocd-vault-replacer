@@ -25,7 +25,7 @@ func substituteb64(input []byte) []byte {
 func Substitute(input []byte, source ValueSource) ([]byte, error) {
 	// First attempt to base64 decode any <vault:> secrets encoded by other
 	// tools, such as helm
-	reB64Value := regexp.MustCompile(`PHZhdWx0O[^\s]*`)
+	reB64Value := regexp.MustCompile(`PHZhdWx0O[^\s'"]*`)
 	debase64input := reB64Value.ReplaceAllFunc(input, substituteb64)
 
 	reValue := regexp.MustCompile(`<[ \t]*vault:[^\r\n]+?>`)

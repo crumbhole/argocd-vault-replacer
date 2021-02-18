@@ -56,9 +56,11 @@ func TestB64Decode(t *testing.T) {
 
 func TestStringSubstB64(t *testing.T) {
 	tests := map[string]string{
-		`foo PHZhdWx0Oi9wYXRoL3RvL3RoaW5nfmZvbz4= to be here`: `foo YmFy to be here`,
-		`fooPHZhdWx0Oi9wYXRoL3RvL3RoaW5nfmZvbz4= to be here`:  `fooYmFy to be here`,
-		`fooPHZhdWx0Oi9wYXRoL3RvL3RoaW5nfmZvbz4=to be here`:   `fooPHZhdWx0Oi9wYXRoL3RvL3RoaW5nfmZvbz4=to be here`,
+		`foo PHZhdWx0Oi9wYXRoL3RvL3RoaW5nfmZvbz4= to be here`:   `foo YmFy to be here`,
+		`foo "PHZhdWx0Oi9wYXRoL3RvL3RoaW5nfmZvbz4=" to be here`: `foo "YmFy" to be here`,
+		`foo 'PHZhdWx0Oi9wYXRoL3RvL3RoaW5nfmZvbz4=' to be here`: `foo 'YmFy' to be here`,
+		`fooPHZhdWx0Oi9wYXRoL3RvL3RoaW5nfmZvbz4= to be here`:    `fooYmFy to be here`,
+		`fooPHZhdWx0Oi9wYXRoL3RvL3RoaW5nfmZvbz4=to be here`:     `fooPHZhdWx0Oi9wYXRoL3RvL3RoaW5nfmZvbz4=to be here`,
 	}
 	for input, expect := range tests {
 		in := []byte(input)
