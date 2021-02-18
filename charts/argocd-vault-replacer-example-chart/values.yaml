@@ -1,2 +1,2 @@
 secret: <vault:path/data/to/your/secret~secretkey>
-configmap: <vault:new/path/data/to/your/secret~secretkey>
+configMap: <vault:new/path/data/to/your/secret~secretkey>
