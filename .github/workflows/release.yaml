@@ -49,6 +49,6 @@ jobs:
           push: true
           platforms: linux/amd64, linux/arm64
           tags: |
-            ghcr.io/joibel/argocd-vault-replacer:${{ env.GIT_TAG_NAME }}
-            ghcr.io/joibel/argocd-vault-replacer:stable
-            ghcr.io/joibel/argocd-vault-replacer:latest
+            ghcr.io/crumbhole/argocd-vault-replacer:${{ env.GIT_TAG_NAME }}
+            ghcr.io/crumbhole/argocd-vault-replacer:stable
+            ghcr.io/crumbhole/argocd-vault-replacer:latest
