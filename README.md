@@ -89,7 +89,7 @@ Environment Variables:
 | Environment Variable Name | Purpose                                                                                                                               | Example                           | Mandatory? |
 |-------------------------- |-------------------------------------------------------------------------------------------------------------------------------------- |---------------------------------- |----------- |
 | VAULT_ADDR                | Provides argocd-vault-replacer with the URL to your Hashicorp Vault instance.                                                         | https://vault.examplecompany.biz  | Y
-| VAULT_TOKEN               | A valid Vault authentication token. This should only be used for debugging.                                                           | s.LLijB190n3c8s4fiSuvTdVNM        | N
+| VAULT_TOKEN               | A valid Vault authentication token. This should only be used for debugging. This won't work inside kubernetes if you have a service account token available, as the tool considers a service account token that fails to authenticate a complete failure. You'll have to run a pod without a service account if you want to use this. The token cannot be renewed by the tool so if it expires, the tool will stop.                                                          | s.LLijB190n3c8s4fiSuvTdVNM        | N
 | VAULT_ROLE                | The name of the role for the VAULT_TOKEN. This defaults to 'argocd'.                                                                  | argocd-role                       | N
 | VAULT_AUTH_PATH           | Determines the authorization path for Kubernetes authentication. This defaults to 'kubernetes' so will probably not need configuring. | kubernetes                        | N
 
@@ -175,6 +175,8 @@ To use the kubernetes service account your pod should be running with the approp
 
 It will use the environment variable VAULT_ROLE as the name of the role for that token, defaulting to "argocd".
 It will use the environment variable VAULT_AUTH_PATH to determine the authorization path for kubernetes authentication. This defaults in this tool and in vault to "kubernetes" so will probably not need configuring.
+
+The vault authentication token that the tool gets will not be cached, nor will it be renewed. It is expected that the token will last for the length of the tool's invokation, which is usually a reasonable assumption in the use case for which it was designed.
 
 ## Valid vault paths
 
