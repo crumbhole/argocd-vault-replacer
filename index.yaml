@@ -3,6 +3,16 @@ entries:
   argocd-vault-replacer-example-chart:
   - apiVersion: v2
     appVersion: 0.0.0
+    created: "2021-02-18T14:44:46.338627824Z"
+    description: A Helm chart to demonstrate how argocd-vault-replacer can work with Helm
+    digest: a46535148999a4302c2396256199ad269487ab04582e83c2e0db259804dc8380
+    name: argocd-vault-replacer-example-chart
+    type: application
+    urls:
+    - https://github.com/Joibel/argocd-vault-replacer/releases/download/argocd-vault-replacer-example-chart-0.0.3/argocd-vault-replacer-example-chart-0.0.3.tgz
+    version: 0.0.3
+  - apiVersion: v2
+    appVersion: 0.0.0
     created: "2021-02-18T13:51:26.501294436Z"
     description: A Helm chart to demonstrate how argocd-vault-replacer can work with Helm
     digest: 7ae9fe43c715903634ff7fd43f294b2f4ff20b2fa3521e694dd795e025b7130c
