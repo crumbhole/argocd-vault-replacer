@@ -1,0 +1,3 @@
+argocd-vault-replacer-example-chart: 
+  secret: <vault:path/data/to/your/secret~secretkey>
+  configMap: <vault:new/path/data/to/your/secret~secretkey>
