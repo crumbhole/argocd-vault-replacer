@@ -4,5 +4,5 @@ version: 0.0.1
 
 dependencies:
 - name: argocd-vault-replacer-example-chart
-  version: 0.0.3
-  repository: https://joibel.github.io/argocd-vault-replacer/
+  version: 0.0.4
+  repository: https://crumbhole.github.io/argocd-vault-replacer/

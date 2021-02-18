@@ -3,8 +3,8 @@ package main
 import (
 	"bufio"
 	"fmt"
-	"github.com/joibel/argocd-vault-replacer/src/substitution"
-	"github.com/joibel/argocd-vault-replacer/src/vaultValueSource"
+	"github.com/crumbhole/argocd-vault-replacer/src/substitution"
+	"github.com/crumbhole/argocd-vault-replacer/src/vaultValueSource"
 	"io/ioutil"
 	"log"
 	"os"

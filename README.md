@@ -14,7 +14,7 @@ If you use it as the reader in a unix pipe, it will instead read from stdin. In 
 - Native Vault-Kubernetes authentication means you don't have to renew tokens or store/passthrough approle role-ids and secret-ids.
 
 # Installing as an Argo CD Plugin
-You can use [our Kustomization example](https://github.com/Joibel/argocd-vault-replacer/tree/main/examples/kustomize/argocd) to install Argo CD and to bootstrap the installation of the plugin at the same time. However the steps below will detail what is required should you wish to do things more manually. The Vault authentication setup cannot be done with Kustomize and must be done manually.
+You can use [our Kustomization example](https://github.com/crumbhole/argocd-vault-replacer/tree/main/examples/kustomize/argocd) to install Argo CD and to bootstrap the installation of the plugin at the same time. However the steps below will detail what is required should you wish to do things more manually. The Vault authentication setup cannot be done with Kustomize and must be done manually.
 
 ## Vault Kubernetes Authentication
 You will need to set up the Vault Kubernetes authentication method for your cluster.
@@ -71,7 +71,7 @@ volumes:
   emptyDir: {}
 initContainers:
 - name: argocd-vault-replacer-install
-  image: ghcr.io/joibel/argocd-vault-replacer
+  image: ghcr.io/crumbhole/argocd-vault-replacer
   imagePullPolicy: Always
   volumeMounts:
     - mountPath: /custom-tools
@@ -164,7 +164,7 @@ spec:
     targetRevision: HEAD
 ```
 
-There are further examples to use for testing in the [example-manifests directory](https://github.com/Joibel/argocd-vault-replacer/tree/main/examples/example-manifests).
+There are further examples to use for testing in the [example-manifests directory](https://github.com/crumbhole/argocd-vault-replacer/tree/main/examples/example-manifests).
 ## A deep-dive on authentication
 
 The tool only has two methods of authenticating with Vault:

@@ -20,7 +20,7 @@ spec:
         emptyDir: {}
       initContainers:
       - name: argocd-vault-replacer-install
-        image: ghcr.io/joibel/argocd-vault-replacer:stable
+        image: ghcr.io/crumbhole/argocd-vault-replacer:stable
         imagePullPolicy: Always
         volumeMounts:
           - mountPath: /custom-tools

@@ -3,7 +3,7 @@ package substitution
 import (
 	"errors"
 	"fmt"
-	"github.com/joibel/argocd-vault-replacer/src/modifier"
+	"github.com/crumbhole/argocd-vault-replacer/src/modifier"
 	"net/url"
 	"regexp"
 )

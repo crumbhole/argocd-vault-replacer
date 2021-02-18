@@ -29,7 +29,7 @@ spec:
     syncOptions:
       - CreateNamespace=true
   source:
-    repoURL: 'https://github.com/Joibel/argocd-vault-replacer/'
+    repoURL: 'https://github.com/crumbhole/argocd-vault-replacer/'
     path: examples/example-third-party-helm-chart/example
     targetRevision: HEAD
     plugin:
