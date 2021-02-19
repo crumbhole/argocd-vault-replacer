@@ -123,7 +123,7 @@ This is documented further in Argo CD's documentation: https://argoproj.github.i
 
 * argo-vault-replacer as a plugin will only work on a directory full of straight .yaml files.
 * kustomize-argo-vault-replacer as a plugin will take the output of kustomize and then do vault-replacement on those files. Note: This won't allow you to use the argo application kustomization options, it just runs a straight kustomize.
-* helm-argo-vault-replacer as a plugin will take the output of helm and then do vault-replacement on those files. Note: This won't allow you to use the argo application helm options, it just runs a straight helm with the default argo name.
+* helm-argo-vault-replacer as a plugin will take the output of Helm and then do vault-replacement on those files. Note: This won't allow you to use the argo application Helm options, it just runs a straight Helm with the default argo name.
 ## Testing
 
 Create a test yaml file that will be used to pull a secret from Vault. The below will look in Vault for /path/to/your/secret and will return the key 'secretkey', it will then base64 encode that value. As we are using a Vault kv2 store, we must include ..`/data/`.. in our path:
@@ -190,10 +190,14 @@ Currently the only valid 'URL style' to a path is
 
 You must put ..`/data/`.. into the path. If your path or key contains `~`, `<`, `>` or `|` you must URL escape it. If your path or key has one or more leading or trailing spaces or tabs you must URL escape them you weirdo.
 
-Specially, it will also find `<vault:>` paths which have been base64 encoded already. This is more limited in scope. This allows you to put the magic `<vault:>` paths into values.yaml in helm, which will then base64 encode these before this tool sees them. In that case we decode them, and substitute. You must *not* put |base64 to modify those secrets (well, I mean you can, but don't expect it to work as you'd like). `<vault:>` paths which are discovered base64 encoded will automatically be base64 encoded as they are replaced. In order to discover these secrets you *must* have whitespace after the `<vault:>` path (this will normally happen in secrets). Basically you shouldn't put something like `<vault:/path~key>-extrastuff` into your values.yaml. You can single or double quote these secrets, as that often happens in helm charts.
+Specially, it will also find `<vault:>` paths which have been base64 encoded already. This is more limited in scope. This allows you to put the magic `<vault:>` paths into values.yaml in Helm, which will then base64 encode these before this tool sees them. In that case we decode them, and substitute. You must *not* put |base64 to modify those secrets (well, I mean you can, but don't expect it to work as you'd like). `<vault:>` paths which are discovered base64 encoded will automatically be base64 encoded as they are replaced. In order to discover these secrets you *must* have whitespace after the `<vault:>` path (this will normally happen in secrets). Basically you shouldn't put something like `<vault:/path~key>-extrastuff` into your values.yaml. You can single or double quote these secrets, as that often happens in Helm charts.
 
 ## Modifiers
 
 You can modify the resulting output with the following modifiers:
 
 * base64: Will base64 encode the secret. Use for data: sections in kubernetes secrets.
+
+
+## Rotating secrets in Vault
+Currently, because Argo CD cannot monitor Vault for changes, when you change a secret in Vault, Argo CD will not automatically update your Kubernetes resources with the new value. You will have to either push a change to git, use the Hard Refresh option in Argo CD, or force Argo CD to heal by deleting the Kubernetes resource in question.
