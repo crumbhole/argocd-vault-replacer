@@ -38,4 +38,10 @@ spec:
 
 Apply your application to Argo CD in the usual way.
 
-Argocd should then show a successful installation of the Helm chart into your cluster. You can then go and view the deployed artefacts and check whether the Vault secrets are as you expect them to be.
+Argocd should then show a successful installation of the Helm chart into your cluster. You can then go and view the deployed artefacts and check whether the Vault secrets are as you expect them to be. You can read the secret and configmap to confirm that your Vault values are present:
+
+```
+kubectl get secret argocd-vault-replacer-example-secret -o jsonpath="{.data.sample-secret}" | base64 --decode
+kubectl get secret argocd-vault-replacer-example-secret -o jsonpath="{.data.quoted-secret}" | base64 --decode
+kubectl get configmaps argocd-vault-replacer-example-configmap -o jsonpath="{.data.sample-secret}"
+```

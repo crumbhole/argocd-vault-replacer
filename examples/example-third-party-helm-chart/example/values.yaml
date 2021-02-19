@@ -1,3 +1,20 @@
 argocd-vault-replacer-example-chart: 
-  secret: <vault:path/data/to/your/secret~secretkey>
+  # You can inject Vault secrets into any valid Kubernetes resource.
+  # Common types are 'secret' and 'configMaps'.
+  # This helm chart deploys a secret and a config map and populates them with Value values defined on a given path.
+
+  secret:
+    # The 'sample-secret' will be pulled from vault and populated into a secret called 'argocd-vault-replacer-example-secret'
+    sample-secret: <vault:path/data/to/your/secret~secretkey>
+    # 'quoted-secret' is as above but will wrap the value in quotes.
+    quoted-secret: <vault:path/data/to/another/secret~secretkey>
+
+  # This will populate a configMap with the value from Vault on the given path.
+  # The config map is called 'argocd-vault-replacer-example-configmap'
   configMap: <vault:new/path/data/to/your/secret~secretkey>
+
+  # Once deployed, you can read the secret and configMap to confirm that your Vault values are present:
+
+  # kubectl get secret argocd-vault-replacer-example-secret -o jsonpath="{.data.sample-secret}" | base64 --decode
+  # kubectl get secret argocd-vault-replacer-example-secret -o jsonpath="{.data.quoted-secret}" | base64 --decode
+  # kubectl get configmaps argocd-vault-replacer-example-configmap -o jsonpath="{.data.sample-secret}"
