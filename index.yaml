@@ -3,6 +3,16 @@ entries:
   argocd-vault-replacer-example-chart:
   - apiVersion: v2
     appVersion: 0.0.0
+    created: "2021-02-19T12:55:35.419207771Z"
+    description: A Helm chart to demonstrate how argocd-vault-replacer can work with Helm
+    digest: 20d4e2ad978b1fd0b278fe114925145ba00753d6c5aadbcfbf72ab2273794d97
+    name: argocd-vault-replacer-example-chart
+    type: application
+    urls:
+    - https://github.com/crumbhole/argocd-vault-replacer/releases/download/argocd-vault-replacer-example-chart-0.0.5/argocd-vault-replacer-example-chart-0.0.5.tgz
+    version: 0.0.5
+  - apiVersion: v2
+    appVersion: 0.0.0
     created: "2021-02-18T15:29:58.100587096Z"
     description: A Helm chart to demonstrate how argocd-vault-replacer can work with Helm
     digest: e4d47b6b9d97d384679175ce2714d92c0adc0ef7c08056df5fc59ac78e5829da
