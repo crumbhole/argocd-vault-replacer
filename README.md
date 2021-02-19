@@ -9,8 +9,8 @@ If you use it as the reader in a unix pipe, it will instead read from stdin. In 
 - Allows you to invest in Git Ops without compromising secret security.
   - Configuration goes into Git.
   - Secrets go into Vault.
-- Changes to secrets in Vault will automatically propagate to your cluster.
 - yaml-agnostic. Supports any Kubernetes resource type as long as it can be expressed in .yaml (or .yml).
+  - Also supports Argo CD-managed Kustomize and Helm charts
 - Native Vault-Kubernetes authentication means you don't have to renew tokens or store/passthrough approle role-ids and secret-ids.
 
 # Installing as an Argo CD Plugin
@@ -164,7 +164,7 @@ spec:
     targetRevision: HEAD
 ```
 
-There are further examples to use for testing in the [example-manifests directory](https://github.com/crumbhole/argocd-vault-replacer/tree/main/examples/example-manifests).
+There are further examples to use for testing in the [examples directory](https://github.com/crumbhole/argocd-vault-replacer/tree/main/examples/).
 ## A deep-dive on authentication
 
 The tool only has two methods of authenticating with Vault:
