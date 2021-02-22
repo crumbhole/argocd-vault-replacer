@@ -1,6 +1,6 @@
 module github.com/crumbhole/argocd-vault-replacer
 
-go 1.14
+go 1.15
 
 require (
 	github.com/hashicorp/vault v1.7.1

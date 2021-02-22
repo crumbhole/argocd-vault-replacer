@@ -22,13 +22,18 @@ func unescape(input []byte) ([]byte, error) {
 }
 
 // Takes the 'dirty' key from the regex and cleans it to the actual key
-func getKey(input []byte) ([]byte, error) {
+func getKeys(input []byte) ([]string, error) {
 	reKey := regexp.MustCompile(`^~\s*(.*?)\s*$`)
-	keyFound := reKey.FindSubmatch(input)
-	if keyFound == nil {
+	reSplit := regexp.MustCompile(`\s*\~\s*`)
+	keysFound := reKey.FindSubmatch(input)
+	if keysFound == nil {
 		return nil, errors.New("Key regex failure")
 	}
-	return unescape(keyFound[1])
+	allKeys, err := unescape(keysFound[1])
+	if err != nil {
+		return nil, err
+	}
+	return reSplit.Split(string(allKeys), -1), nil
 }
 
 // Takes the 'dirty' modifiers from the regex and turns them into a list
@@ -42,10 +47,22 @@ func getModifiers(modifiers []byte) ([]string, error) {
 	return reSplit.Split(string(modsFound[1]), -1), nil
 }
 
-func performModifiers(modifiers []string, input []byte) ([]byte, error) {
-	value := input
+func performModifiers(modifiers []string, input modifier.Kvlist) ([]byte, error) {
+	var err error
+
+	// First modifier must transform Kvlist->[]byte
+	value, err := modifier.ModifyKVList(input, modifiers[0])
+	if err != nil {
+		value, err = modifier.ModifyKVList(input, `valuestext`)
+		if err != nil {
+			return nil, err
+		}
+	} else {
+		// Take off the first modifier
+		modifiers = modifiers[1:]
+	}
+
 	for _, mod := range modifiers {
-		var err error
 		value, err = modifier.Modify(value, mod)
 		if err != nil {
 			return nil, err
@@ -65,23 +82,30 @@ func (s *Substitutor) substituteValueWithError(input []byte) ([]byte, error) {
 			if err != nil {
 				return nil, err
 			}
-			key, err := getKey(pathFound[2])
+			keys, err := getKeys(pathFound[2])
 			if err != nil {
 				return nil, err
 			}
-			modifiers := pathFound[3]
-			value, err := s.source.GetValue(path, key)
-			if err != nil {
-				return nil, err
-			}
-			if len(modifiers) > 0 {
-				modList, err := getModifiers(modifiers)
+			var kvs modifier.Kvlist
+			for _, key := range keys {
+				value, err := s.source.GetValue(path, []byte(key))
 				if err != nil {
 					return nil, err
 				}
-				return performModifiers(modList, *value)
+				kvs = append(kvs, modifier.Kv{Key: []byte(key), Value: *value})
 			}
-			return *value, nil
+			modifiers := pathFound[3]
+			if err != nil {
+				return nil, err
+			}
+			if len(modifiers) == 0 {
+				modifiers = []byte(`|valuestext`)
+			}
+			modList, err := getModifiers(modifiers)
+			if err != nil {
+				return nil, err
+			}
+			return performModifiers(modList, kvs)
 		}
 		return nil, errors.New(`Failed to find path for substitution`)
 	}
