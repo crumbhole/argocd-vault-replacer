@@ -3,10 +3,10 @@ package main
 import (
 	"bytes"
 	"fmt"
+	"github.com/crumbhole/argocd-vault-replacer/src/vaultValueSource"
 	"github.com/hashicorp/vault/api"
 	"github.com/hashicorp/vault/http"
 	"github.com/hashicorp/vault/vault"
-	"github.com/crumbhole/argocd-vault-replacer/src/vaultValueSource"
 	"io"
 	"io/ioutil"
 	"net"
