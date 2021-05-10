@@ -1,4 +1,5 @@
 name: Build and test
+key: ${{ runner.os }}-mycache-v1-${{ hashFiles(...) }}
 
 on:
   pull_request:

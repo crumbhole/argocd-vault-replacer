@@ -10,6 +10,7 @@
 # supported CodeQL languages.
 #
 name: "CodeQL"
+key: ${{ runner.os }}-mycache-v1-${{ hashFiles(...) }}
 
 on:
   push:
