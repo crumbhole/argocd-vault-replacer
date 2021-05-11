@@ -8,11 +8,6 @@ import (
 	"regexp"
 )
 
-type Substitutor struct {
-	source ValueSource
-	errs   error
-}
-
 func unescape(input []byte) ([]byte, error) {
 	result, err := url.QueryUnescape(string(input))
 	if err != nil {
@@ -88,7 +83,7 @@ func (s *Substitutor) substituteValueWithError(input []byte) ([]byte, error) {
 			}
 			var kvs modifier.Kvlist
 			for _, key := range keys {
-				value, err := s.source.GetValue(path, []byte(key))
+				value, err := s.Source.GetValue(path, []byte(key))
 				if err != nil {
 					return nil, err
 				}

@@ -190,14 +190,14 @@ Currently the only valid 'URL style' to a path is
 
 You must put ..`/data/`.. into the path. If your path or key contains `~`, `<`, `>` or `|` you must URL escape it. If your path or key has one or more leading or trailing spaces or tabs you must URL escape them you weirdo.
 
-Specially, it will also find `<vault:>` paths which have been base64 encoded already. This is more limited in scope. This allows you to put the magic `<vault:>` paths into values.yaml in Helm, which will then base64 encode these before this tool sees them. In that case we decode them, and substitute. You must *not* put |base64 to modify those secrets (well, I mean you can, but don't expect it to work as you'd like). `<vault:>` paths which are discovered base64 encoded will automatically be base64 encoded as they are replaced. In order to discover these secrets you *must* have whitespace after the `<vault:>` path (this will normally happen in secrets). Basically you shouldn't put something like `<vault:/path~key>-extrastuff` into your values.yaml. You can single or double quote these secrets, as that often happens in Helm charts.
+Any base64 encoded strings will be decoded and subsitution will happen within them (and end up being base64 encoded afterwards). These base64 strings require some form of whitespace (any non-base64 valid character) around them in order to be detected.
 
 ## Modifiers
 
 You can modify the resulting output with the following modifiers:
 
 * base64: Will base64 encode the secret. Use for data: sections in kubernetes secrets.
-
+* Other modifiers are currently unfinished.
 
 ## Rotating secrets in Vault
 Currently, because Argo CD cannot monitor Vault for changes, when you change a secret in Vault, Argo CD will not automatically update your Kubernetes resources with the new value. You will have to either push a change to git, use the Hard Refresh option in Argo CD, or force Argo CD to heal by deleting the Kubernetes resource in question.

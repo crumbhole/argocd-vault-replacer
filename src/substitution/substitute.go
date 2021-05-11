@@ -5,30 +5,35 @@ import (
 	"regexp"
 )
 
-func substituteb64(input []byte) []byte {
+type Substitutor struct {
+	Source ValueSource
+	errs   error
+}
+
+// Takes a whole multi-line []byte and substitutes with base64 decode
+func (s *Substitutor) substitutebase64(input []byte) []byte {
 	decoded, err := base64.StdEncoding.DecodeString(string(input))
+	// We don't know this is b64, so failure to decode is fine
 	if err != nil {
 		return input
 	}
-	// This reValue differs from the one in Substitute as it requires a match on
-	// the whole thing
-	reValue := regexp.MustCompile(`^(<[ \t]*vault:[^\r\n]+?)>$`)
-	// We want to stuff |base64 on the end of this
-	matchFound := reValue.FindSubmatch(decoded)
-	if matchFound != nil {
-		return []byte(string(matchFound[1]) + `|base64>`)
-	}
-	return input
+	// Recurse with the decoded version
+	out, err := s.substituteraw(decoded)
+	return []byte(base64.StdEncoding.EncodeToString(out))
+}
+
+// Takes a whole multi-line []byte and substitutes without base64 decode
+func (s *Substitutor) substituteraw(input []byte) ([]byte, error) {
+	reValue := regexp.MustCompile(`<[ \t]*vault:[^\r\n]+?>`)
+	return reValue.ReplaceAllFunc(input, s.substituteValue), s.errs
 }
 
 // Takes a whole multi-line []byte and finds appropriate subsitutions
-func Substitute(input []byte, source ValueSource) ([]byte, error) {
+func (s *Substitutor) Substitute(input []byte) ([]byte, error) {
 	// First attempt to base64 decode any <vault:> secrets encoded by other
 	// tools, such as helm
-	reB64Value := regexp.MustCompile(`PHZhdWx0O[^\s'"]*`)
-	debase64input := reB64Value.ReplaceAllFunc(input, substituteb64)
+	reB64Value := regexp.MustCompile(`[A-Za-z0-9\+\/\=]{10,}`)
+	postbase64input := reB64Value.ReplaceAllFunc(input, s.substitutebase64)
 
-	reValue := regexp.MustCompile(`<[ \t]*vault:[^\r\n]+?>`)
-	subst := Substitutor{source: source}
-	return reValue.ReplaceAllFunc(debase64input, subst.substituteValue), subst.errs
+	return s.substituteraw(postbase64input)
 }

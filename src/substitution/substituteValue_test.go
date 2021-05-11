@@ -18,7 +18,7 @@ var substval_vs = mockValueSource{values: map[pathKeyTuple][]byte{
 	{`/path/>/<`, `<><>`}:               []byte(`pointy`),
 },
 }
-var subst = Substitutor{source: substval_vs}
+var subst = Substitutor{Source: substval_vs}
 
 func TestBasicFail(t *testing.T) {
 	key := []byte(`blah`)

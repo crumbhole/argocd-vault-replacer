@@ -17,7 +17,8 @@ type scanner struct {
 }
 
 func (s *scanner) process(input []byte) error {
-	modifiedcontents, err := substitution.Substitute(input, s.source)
+	subst := substitution.Substitutor{Source: s.source}
+	modifiedcontents, err := subst.Substitute(input)
 	if err != nil {
 		return err
 	}
