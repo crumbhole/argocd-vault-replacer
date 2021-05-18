@@ -7,10 +7,11 @@ type Kv struct {
 
 type Kvlist []Kv
 
-type kvmodifier interface {
-	modify(Kvlist) ([]byte, error)
-}
-
 type modifier interface {
 	modify([]byte) ([]byte, error)
+}
+
+type kvmodifier interface {
+	modifier
+	modifyKvlist(Kvlist) ([]byte, error)
 }

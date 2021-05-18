@@ -19,9 +19,19 @@ func TestJsonObjectToList(t *testing.T) {
 			{Key: []byte(`sausage`), Value: []byte(`bar`)},
 		},
 	}
+	modifier := jsonObjectToListModifierGet(`jsonobject2list(keyname,valuename)`)
 	for expect, input := range tests {
-		modifier := jsonObjectToListModifierGet(`jsonobject2list(keyname,valuename)`)
-		res, err := modifier.modify(input)
+		res, err := modifier.modifyKvlist(input)
+		if err != nil {
+			t.Errorf("%v !-> %v, got an error %s", input, expect, err)
+		}
+		if !bytes.Equal(res, []byte(expect)) {
+			t.Errorf("%v !-> %v, got %s", input, expect, res)
+		}
+	}
+	modifier = jsonObjectToListModifierGet(`jsonobject2list( keyname   ,    valuename   )`)
+	for expect, input := range tests {
+		res, err := modifier.modifyKvlist(input)
 		if err != nil {
 			t.Errorf("%v !-> %v, got an error %s", input, expect, err)
 		}

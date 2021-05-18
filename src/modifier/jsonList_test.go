@@ -12,9 +12,9 @@ func TestJsonList(t *testing.T) {
 			{Key: []byte(`key2`), Value: []byte(`val2`)},
 		},
 	}
+	modifier := jsonListModifier{}
 	for expect, input := range tests {
-		modifier := jsonListModifier{}
-		res, err := modifier.modify(input)
+		res, err := modifier.modifyKvlist(input)
 		if err != nil {
 			t.Errorf("%v !-> %v, got an error %s", input, expect, err)
 		}

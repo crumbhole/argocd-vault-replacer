@@ -1,12 +1,38 @@
 package modifier
 
 import (
+	"encoding/json"
 	"fmt"
 )
 
+func textToKvlist(input []byte) (Kvlist, error) {
+	list := Kvlist{}
+	err := json.Unmarshal(input, &list)
+	if err != nil {
+		flat := make(map[string]string, 0)
+		err = json.Unmarshal(input, &flat)
+		if err != nil {
+			return nil, err
+		}
+		for key, val := range flat {
+			list = append(list, Kv{Key: []byte(key), Value: []byte(val)})
+		}
+	}
+	return list, nil
+}
+
 func getModifier(name string) (modifier, error) {
+	obj2list := jsonObjectToListModifierGet(name)
+	if obj2list != nil {
+		return obj2list, nil
+	}
+
 	modifiers := map[string]modifier{
-		"base64": base64Modifier{},
+		"base64":           base64Modifier{},
+		"json2htaccess":    htaccessModifier{},
+		"jsonlist":         jsonListModifier{},
+		"jsonkeyedobject":  jsonKeyedObjectModifier{},
+		"jsonpairedobject": jsonPairedObjectModifier{},
 	}
 	if found, ok := modifiers[name]; ok {
 		return found, nil
@@ -45,5 +71,5 @@ func ModifyKVList(input Kvlist, name string) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
-	return modifier.modify(input)
+	return modifier.modifyKvlist(input)
 }

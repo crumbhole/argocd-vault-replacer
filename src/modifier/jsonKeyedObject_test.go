@@ -19,9 +19,9 @@ func TestJsonKeyedObject(t *testing.T) {
 			{Key: []byte(`sausage`), Value: []byte(`bar`)},
 		},
 	}
+	modifier := jsonKeyedObjectModifier{}
 	for expect, input := range tests {
-		modifier := jsonKeyedObjectModifier{}
-		res, err := modifier.modify(input)
+		res, err := modifier.modifyKvlist(input)
 		if err != nil {
 			t.Errorf("%v !-> %v, got an error %s", input, expect, err)
 		}

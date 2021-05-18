@@ -19,9 +19,9 @@ func TestJsonPairedObject(t *testing.T) {
 			{Key: []byte(`sausage`), Value: []byte(`bar`)},
 		},
 	}
+	modifier := jsonPairedObjectModifier{}
 	for expect, input := range tests {
-		modifier := jsonPairedObjectModifier{}
-		res, err := modifier.modify(input)
+		res, err := modifier.modifyKvlist(input)
 		if err != nil {
 			t.Errorf("%v !-> %v, got an error %s", input, expect, err)
 		}
@@ -42,9 +42,9 @@ func TestJsonPairedObjectFail(t *testing.T) {
 			{Key: []byte(`key1`), Value: []byte(`val1`)},
 		},
 	}
+	modifier := jsonPairedObjectModifier{}
 	for _, input := range tests {
-		modifier := jsonPairedObjectModifier{}
-		_, err := modifier.modify(input)
+		_, err := modifier.modifyKvlist(input)
 		expectedError := `Paired object needs an even number of inputs`
 		if err == nil || err.Error() != expectedError {
 			t.Errorf("Expecting %s, got %s", expectedError, err)

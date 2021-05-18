@@ -1,8 +1,17 @@
 package modifier
 
-type valuesTextModifier struct{}
+type valuesTextModifier struct {
+}
 
-func (_ valuesTextModifier) modify(input Kvlist) ([]byte, error) {
+func (this valuesTextModifier) modify(input []byte) ([]byte, error) {
+	list, err := textToKvlist(input)
+	if err != nil {
+		return nil, err
+	}
+	return this.modifyKvlist(list)
+}
+
+func (_ valuesTextModifier) modifyKvlist(input Kvlist) ([]byte, error) {
 	out := []byte{}
 	for _, value := range input {
 		out = append(out, value.Value...)

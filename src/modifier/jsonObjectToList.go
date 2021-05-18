@@ -9,7 +9,7 @@ import (
 
 func jsonObjectToListModifierGet(call string) kvmodifier {
 	// TODO: Some helpful to the user error handling here when parsing fails
-	reParams := regexp.MustCompile(`jsonobject2list\(([^\,\)\s)]+?)\,([^\,\)\s)]+?)\)`)
+	reParams := regexp.MustCompile(`jsonobject2list\(\s*([^\,\))]+?)\s*\,\s*([^\,\))]+?)\s*\)`)
 	paramsFound := reParams.FindStringSubmatch(call)
 	if paramsFound == nil {
 		return nil
@@ -26,7 +26,15 @@ type jsonObjectToListModifier struct {
 	valuename string
 }
 
-func (mod jsonObjectToListModifier) modify(input Kvlist) ([]byte, error) {
+func (this jsonObjectToListModifier) modify(input []byte) ([]byte, error) {
+	list, err := textToKvlist(input)
+	if err != nil {
+		return nil, err
+	}
+	return this.modifyKvlist(list)
+}
+
+func (mod jsonObjectToListModifier) modifyKvlist(input Kvlist) ([]byte, error) {
 	list := make([]map[string]string, 0)
 	for _, kv := range input {
 		newObj := make(map[string]string)
