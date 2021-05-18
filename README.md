@@ -186,7 +186,7 @@ The vault authentication token that the tool gets will not be cached, nor will i
 
 Currently the only valid 'URL style' to a path is
 
-`<vault:/store/data/path~key|modifier|modifier>`
+`<vault:/store/data/path~key~key~key|modifier|modifier>`
 
 You must put ..`/data/`.. into the path. If your path or key contains `~`, `<`, `>` or `|` you must URL escape it. If your path or key has one or more leading or trailing spaces or tabs you must URL escape them you weirdo.
 
@@ -197,7 +197,7 @@ Any base64 encoded strings will be decoded and subsitution will happen within th
 You can modify the resulting output with the following modifiers:
 
 * base64: Will base64 encode the secret. Use for data: sections in kubernetes secrets.
-* Other modifiers are currently unfinished.
+* Other modifiers are documented in [docs/modifiers](docs/modifiers.md)
 
 ## Rotating secrets in Vault
 Currently, because Argo CD cannot monitor Vault for changes, when you change a secret in Vault, Argo CD will not automatically update your Kubernetes resources with the new value. You will have to either push a change to git, use the Hard Refresh option in Argo CD, or force Argo CD to heal by deleting the Kubernetes resource in question.
