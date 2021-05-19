@@ -13,7 +13,12 @@ func (_ htaccessModifier) modify(inputJson []byte) ([]byte, error) {
 	input := make([]map[string]string, 0)
 	err := json.Unmarshal(inputJson, &input)
 	if err != nil {
-		return inputJson, err
+		inputsingle := make(map[string]string, 0)
+		err = json.Unmarshal(inputJson, &inputsingle)
+		if err != nil {
+			return inputJson, err
+		}
+		input = append(input, inputsingle)
 	}
 	passwords := make(map[string]string, len(input))
 	for _, kv := range input {
