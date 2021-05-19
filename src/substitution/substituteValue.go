@@ -113,10 +113,11 @@ func (s *Substitutor) substituteValueWithError(input []byte) ([]byte, error) {
 func (s *Substitutor) substituteValue(input []byte) []byte {
 	res, err := s.substituteValueWithError(input)
 	if err != nil {
+		longerr := fmt.Errorf("Processing %s failed: %s", string(input), err)
 		if s.errs == nil {
-			s.errs = err
+			s.errs = longerr
 		} else {
-			s.errs = fmt.Errorf("%s\n%s", s.errs, err)
+			s.errs = fmt.Errorf("%s\n%s", s.errs, longerr)
 		}
 	}
 	return res
