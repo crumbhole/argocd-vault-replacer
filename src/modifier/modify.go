@@ -3,6 +3,7 @@ package modifier
 import (
 	"encoding/json"
 	"fmt"
+	"sort"
 )
 
 func textToKvlist(input []byte) (Kvlist, error) {
@@ -18,6 +19,8 @@ func textToKvlist(input []byte) (Kvlist, error) {
 			list = append(list, Kv{Key: []byte(key), Value: []byte(val)})
 		}
 	}
+	// We care that the ordering is stable only
+	sort.Slice(list, func(i, j int) bool { return string(list[i].Key) < string(list[j].Key) })
 	return list, nil
 }
 
