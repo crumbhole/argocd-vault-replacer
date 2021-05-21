@@ -4,4 +4,4 @@ kind: ConfigMap
 metadata:
   name: argocd-vault-replacer-example-configmap
 data:
-  sample-secret: <vault:path/data/to/your/secret~secretkey>
+  sample-secret: <secret:path/data/to/your/secret~secretkey>

@@ -24,7 +24,7 @@ func (s *Substitutor) substitutebase64(input []byte) []byte {
 
 // Takes a whole multi-line []byte and substitutes without base64 decode
 func (s *Substitutor) substituteraw(input []byte) ([]byte, error) {
-	reValue := regexp.MustCompile(`<[ \t]*vault:[^\r\n]+?>`)
+	reValue := regexp.MustCompile(`<[ \t]*(secret|vault):[^\r\n]+?>`)
 	return reValue.ReplaceAllFunc(input, s.substituteValue), s.errs
 }
 

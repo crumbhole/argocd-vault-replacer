@@ -3,4 +3,4 @@ kind: ConfigMap
 metadata:
   name: argocd-cm
 data:
-  thingfromvault: <vault:/secret/data/path~foo>
+  thingfromvault: <secret:/secret/data/path~foo>

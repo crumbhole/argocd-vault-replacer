@@ -69,15 +69,15 @@ func performModifiers(modifiers []string, input modifier.Kvlist) ([]byte, error)
 // Swaps a <value:...> for the value from the valuesource
 // input should contain no lf/cf
 func (s *Substitutor) substituteValueWithError(input []byte) ([]byte, error) {
-	reOuter := regexp.MustCompile(`^<\s*vault:\s*([^\~]*[^\s])\s*(\~\s*[^\|]+)?\s*(\|.*)?\s*>$`)
+	reOuter := regexp.MustCompile(`^<\s*(secret|vault):\s*([^\~]*[^\s])\s*(\~\s*[^\|]+)?\s*(\|.*)?\s*>$`)
 	pathFound := reOuter.FindSubmatch(input)
 	if pathFound != nil {
-		if len(pathFound[2]) > 0 {
-			path, err := unescape(pathFound[1])
+		if len(pathFound[3]) > 0 {
+			path, err := unescape(pathFound[2])
 			if err != nil {
 				return nil, err
 			}
-			keys, err := getKeys(pathFound[2])
+			keys, err := getKeys(pathFound[3])
 			if err != nil {
 				return nil, err
 			}
@@ -89,7 +89,7 @@ func (s *Substitutor) substituteValueWithError(input []byte) ([]byte, error) {
 				}
 				kvs = append(kvs, modifier.Kv{Key: []byte(key), Value: *value})
 			}
-			modifiers := pathFound[3]
+			modifiers := pathFound[4]
 			if err != nil {
 				return nil, err
 			}

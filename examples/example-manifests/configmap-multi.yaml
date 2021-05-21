@@ -4,5 +4,5 @@ kind: ConfigMap
 metadata:
   name: argocd-vault-replacer-example-configmap-multi
 data:
-  sample-secret-one: <vault:path/data/to/your/secret~secretkey>
-  sample-secret-two: <vault:anoth/path/data/to/yet/another/secret~andADifferentKeyName>
+  sample-secret-one: <secret:path/data/to/your/secret~secretkey>
+  sample-secret-two: <secret:anoth/path/data/to/yet/another/secret~andADifferentKeyName>

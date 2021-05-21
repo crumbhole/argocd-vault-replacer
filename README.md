@@ -1,7 +1,9 @@
 # argocd-vault-replacer
-An [Argo CD](https://argoproj.github.io/argo-cd/) plugin to replace placeholders in Kubernetes manifests with secrets stored in [Hashicorp Vault](https://www.vaultproject.io/). The binary will scan the current directory recursively for any .yaml (or .yml if you're so inclined) files and attempt to replace strings of the form `<vault:/store/data/path~key>` with those obtained from a Vault kv2 store.
+An [Argo CD](https://argoproj.github.io/argo-cd/) plugin to replace placeholders in Kubernetes manifests with secrets stored in [Hashicorp Vault](https://www.vaultproject.io/). The binary will scan the current directory recursively for any .yaml (or .yml if you're so inclined) files and attempt to replace strings of the form `<secret:/store/data/path~key>` with those obtained from a Vault kv2 store.
 
 If you use it as the reader in a unix pipe, it will instead read from stdin. In this scenario it can post-process the output of another tool, such as Kustomize or Helm.
+
+Note: This and previous versions of this plugin only talk to vault, and hence <secret:...> can also be specified as <vault:...>. Future plans may include other secret providers.
 
 <img src="assets/images/argocd-vault-replacer-diagram.png">
 
@@ -134,7 +136,7 @@ kind: Secret
 metadata:
   name: argocd-vault-replacer-secret
 data:
-  sample-secret: <vault:path/data/to/your/secret~secretkey|base64>
+  sample-secret: <secret:path/data/to/your/secret~secretkey|base64>
 type: Opaque
 ```
 In this example, we pushed the above to `https://github.com/replace-me/argocd-vault-replacer-test/argocd-vault-replacer-secret.yaml`
@@ -186,7 +188,7 @@ The vault authentication token that the tool gets will not be cached, nor will i
 
 Currently the only valid 'URL style' to a path is
 
-`<vault:/store/data/path~key~key~key|modifier|modifier>`
+`<secret:/store/data/path~key~key~key|modifier|modifier>`
 
 You must put ..`/data/`.. into the path. If your path or key contains `~`, `<`, `>` or `|` you must URL escape it. If your path or key has one or more leading or trailing spaces or tabs you must URL escape them you weirdo.
 

@@ -4,13 +4,13 @@
 
 secret:
   # The 'sample-secret' will be pulled from vault and populated into a secret called 'argocd-vault-replacer-example-secret'
-  sampleSecret: <vault:path/data/to/your/secret~secretkey>
+  sampleSecret: <secret:path/data/to/your/secret~secretkey>
   # 'quoted-secret' is as above but will wrap the value in quotes.
-  sampleSecretQuoted: <vault:path/data/to/another/secret~secretkey>
+  sampleSecretQuoted: <secret:path/data/to/another/secret~secretkey>
 
 # This will populate a configMap with the value from Vault on the given path.
 # The config map is called 'argocd-vault-replacer-example-configmap'
-configMap: <vault:new/path/data/to/your/secret~secretkey>
+configMap: <secret:new/path/data/to/your/secret~secretkey>
 
 # Once deployed, you can read the secret and configMap to confirm that your Vault values are present:
 
