@@ -46,7 +46,7 @@ Takes a json object and splits it into a list of objects with the keys coming fr
 ```
 
 ## json2htaccess
-_Don't use this, see (issue #6)[https://github.com/crumbhole/argocd-vault-replacer/issues/6]
+_Don't use this_, see [issue #6](https://github.com/crumbhole/argocd-vault-replacer/issues/6)
 Takes an object list (jsonobject2list) and uses the key called user and the key called password from each object to make an htaccess file. Any object in the list without these keys is an error.
 
 
