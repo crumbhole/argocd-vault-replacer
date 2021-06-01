@@ -50,5 +50,5 @@ func (m VaultValueSource) GetValue(path []byte, key []byte) (*[]byte, error) {
 			}
 		}
 	}
-	return nil, fmt.Errorf("Couldn't find %s ! %s", path, key)
+	return nil, fmt.Errorf("Couldn't find %s~%s", path, key)
 }
