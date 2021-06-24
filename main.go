@@ -3,6 +3,7 @@ package main
 import (
 	"bufio"
 	"fmt"
+	"github.com/crumbhole/argocd-vault-replacer/src/bwValueSource"
 	"github.com/crumbhole/argocd-vault-replacer/src/substitution"
 	"github.com/crumbhole/argocd-vault-replacer/src/vaultValueSource"
 	"io/ioutil"
@@ -51,9 +52,17 @@ func (s *scanner) scanDir(path string) error {
 	return filepath.Walk(path, s.scanFile)
 }
 
+func selectValueSource() substitution.ValueSource {
+	// This would be better with a factory pattern
+	if _, bwpresent := os.LookupEnv(`BW_SESSION`); bwpresent {
+		return bwValueSource.BitwardenValueSource{}
+	}
+	return vaultValueSource.VaultValueSource{}
+}
+
 func main() {
 	stat, _ := os.Stdin.Stat()
-	s := scanner{source: vaultValueSource.VaultValueSource{}}
+	s := scanner{source: selectValueSource()}
 	if (stat.Mode() & os.ModeCharDevice) == 0 {
 		reader := bufio.NewReader(os.Stdin)
 		filecontents, err := ioutil.ReadAll(reader)
