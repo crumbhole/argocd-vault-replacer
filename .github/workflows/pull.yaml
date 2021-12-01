@@ -37,4 +37,4 @@ jobs:
           file: ./Dockerfile
           push: false
           platforms: linux/amd64, linux/arm64
-          tags: ghcr.io/crumbhole/argocd-vault-replacer:latest
+          tags: ghcr.io/crumbhole/argocd-vault-replacer:pull
