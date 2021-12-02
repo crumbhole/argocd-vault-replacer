@@ -86,7 +86,8 @@ data:
   VAULT_ADDR: aHR0cHM6Ly92YXVsdC5leGFtcGxlLmJpeg==
 kind: Secret
 metadata:
-  name: argocd-vault-replacer-secret
+  name: argocd-vault-replacer-credentials
+  namespace: argocd
 type: Opaque
 ```
 
