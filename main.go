@@ -3,9 +3,9 @@ package main
 import (
 	"bufio"
 	"fmt"
-	"github.com/crumbhole/argocd-vault-replacer/src/bwValueSource"
+	"github.com/crumbhole/argocd-vault-replacer/src/bwvaluesource"
 	"github.com/crumbhole/argocd-vault-replacer/src/substitution"
-	"github.com/crumbhole/argocd-vault-replacer/src/vaultValueSource"
+	"github.com/crumbhole/argocd-vault-replacer/src/vaultvaluesource"
 	"io/ioutil"
 	"log"
 	"os"
@@ -55,9 +55,9 @@ func (s *scanner) scanDir(path string) error {
 func selectValueSource() substitution.ValueSource {
 	// This would be better with a factory pattern
 	if _, bwpresent := os.LookupEnv(`BW_SESSION`); bwpresent {
-		return bwValueSource.BitwardenValueSource{}
+		return bwvaluesource.BitwardenValueSource{}
 	}
-	return vaultValueSource.VaultValueSource{}
+	return vaultvaluesource.VaultValueSource{}
 }
 
 func main() {

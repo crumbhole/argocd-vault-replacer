@@ -1,4 +1,4 @@
-package bwValueSource
+package bwvaluesource
 
 import (
 	"errors"
@@ -12,15 +12,17 @@ const (
 	envCheck = "BW_SESSION"
 )
 
+// BitwardenValueSource is a value source getting values from bitwarden
 type BitwardenValueSource struct{}
 
-func (_ BitwardenValueSource) getItemSplitPath(path string) (*bwwrap.BwItem, error) {
+func (BitwardenValueSource) getItemSplitPath(path string) (*bwwrap.BwItem, error) {
 	pathParts := strings.Split(string(path), `/`)
 	keyUsed := pathParts[len(pathParts)-1]
 	pathUsed := strings.Join(pathParts[:len(pathParts)-1], `/`)
 	return bwwrap.GetItemFromFolder(keyUsed, pathUsed)
 }
 
+// GetValue returns a value from a path+key in bitwarden or null if it doesn't exist
 func (m BitwardenValueSource) GetValue(path []byte, key []byte) (*[]byte, error) {
 	if _, present := os.LookupEnv(envCheck); !present {
 		return nil, errors.New("Bitwarden session key not present")

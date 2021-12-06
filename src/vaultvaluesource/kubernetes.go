@@ -1,4 +1,4 @@
-package vaultValueSource
+package vaultvaluesource
 
 import (
 	"fmt"

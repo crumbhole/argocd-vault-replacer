@@ -1,10 +1,11 @@
-package vaultValueSource
+package vaultvaluesource
 
 import (
 	"fmt"
 	vault "github.com/hashicorp/vault/api"
 )
 
+// VaultValueSource is a value source getting values from hashicorp vault
 type VaultValueSource struct {
 	Client *vault.Client
 }
@@ -24,6 +25,7 @@ func (m *VaultValueSource) initClient() error {
 	return nil
 }
 
+// GetValue returns a value from a path+key in hashicorp vault or null if it doesn't exist
 func (m VaultValueSource) GetValue(path []byte, key []byte) (*[]byte, error) {
 	err := m.initClient()
 	if err != nil {

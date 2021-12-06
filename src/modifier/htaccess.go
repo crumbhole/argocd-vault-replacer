@@ -9,14 +9,14 @@ import (
 
 type htaccessModifier struct{}
 
-func (_ htaccessModifier) modify(inputJson []byte) ([]byte, error) {
+func (htaccessModifier) modify(inputJSON []byte) ([]byte, error) {
 	input := make([]map[string]string, 0)
-	err := json.Unmarshal(inputJson, &input)
+	err := json.Unmarshal(inputJSON, &input)
 	if err != nil {
 		inputsingle := make(map[string]string, 0)
-		err = json.Unmarshal(inputJson, &inputsingle)
+		err = json.Unmarshal(inputJSON, &inputsingle)
 		if err != nil {
-			return inputJson, err
+			return inputJSON, err
 		}
 		input = append(input, inputsingle)
 	}

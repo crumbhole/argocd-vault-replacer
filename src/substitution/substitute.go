@@ -5,12 +5,14 @@ import (
 	"regexp"
 )
 
+// Substitutor is acting like a class to hold the information to perform substitution on some data
+// and collect the errors during that substitution.
 type Substitutor struct {
 	Source ValueSource
 	errs   error
 }
 
-// Takes a whole multi-line []byte and substitutes with base64 decode
+// substitutebase64 takes a whole multi-line []byte and substitutes with base64 decode
 func (s *Substitutor) substitutebase64(input []byte) []byte {
 	decoded, err := base64.StdEncoding.DecodeString(string(input))
 	// We don't know this is b64, so failure to decode is fine
@@ -18,17 +20,17 @@ func (s *Substitutor) substitutebase64(input []byte) []byte {
 		return input
 	}
 	// Recurse with the decoded version
-	out, err := s.substituteraw(decoded)
+	out, _ := s.substituteraw(decoded)
 	return []byte(base64.StdEncoding.EncodeToString(out))
 }
 
-// Takes a whole multi-line []byte and substitutes without base64 decode
+// substituteraw takes a whole multi-line []byte and substitutes without base64 decode
 func (s *Substitutor) substituteraw(input []byte) ([]byte, error) {
 	reValue := regexp.MustCompile(`<[ \t]*(secret|vault):[^\r\n]+?>`)
 	return reValue.ReplaceAllFunc(input, s.substituteValue), s.errs
 }
 
-// Takes a whole multi-line []byte and finds appropriate subsitutions
+// Substitute takes a whole multi-line []byte and finds appropriate subsitutions
 func (s *Substitutor) Substitute(input []byte) ([]byte, error) {
 	// First attempt to base64 decode any <vault:> secrets encoded by other
 	// tools, such as helm

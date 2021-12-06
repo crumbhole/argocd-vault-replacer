@@ -26,12 +26,12 @@ type jsonObjectToListModifier struct {
 	valuename string
 }
 
-func (this jsonObjectToListModifier) modify(input []byte) ([]byte, error) {
+func (mod jsonObjectToListModifier) modify(input []byte) ([]byte, error) {
 	list, err := textToKvlist(input)
 	if err != nil {
 		return nil, err
 	}
-	return this.modifyKvlist(list)
+	return mod.modifyKvlist(list)
 }
 
 func (mod jsonObjectToListModifier) modifyKvlist(input Kvlist) ([]byte, error) {

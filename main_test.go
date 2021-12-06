@@ -3,7 +3,7 @@ package main
 import (
 	"bytes"
 	"fmt"
-	"github.com/crumbhole/argocd-vault-replacer/src/vaultValueSource"
+	"github.com/crumbhole/argocd-vault-replacer/src/vaultvaluesource"
 	"github.com/hashicorp/vault/api"
 	"github.com/hashicorp/vault/http"
 	"github.com/hashicorp/vault/vault"
@@ -93,7 +93,7 @@ func TestDirectories(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
-	s := scanner{source: vaultValueSource.VaultValueSource{Client: client}}
+	s := scanner{source: vaultvaluesource.VaultValueSource{Client: client}}
 
 	for _, d := range dirs {
 		t.Logf("Testing dir %s", testsPath+d.Name())

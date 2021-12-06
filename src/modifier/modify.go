@@ -43,6 +43,8 @@ func getModifier(name string) (modifier, error) {
 	return nil, fmt.Errorf("Invalid modifier %s", name)
 }
 
+// Modify takes some input and the name of a modifier to modify that string
+// with and returns the changed input.
 func Modify(input []byte, name string) ([]byte, error) {
 	modifier, err := getModifier(name)
 	if err != nil {
@@ -69,6 +71,8 @@ func getKVModifier(name string) (kvmodifier, error) {
 	return nil, fmt.Errorf("Invalid modifier %s", name)
 }
 
+// ModifyKVList takes some key+values and the name of a modifier to modify that list
+// with and returns the changed input.
 func ModifyKVList(input Kvlist, name string) ([]byte, error) {
 	modifier, err := getKVModifier(name)
 	if err != nil {

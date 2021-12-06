@@ -8,15 +8,15 @@ import (
 type jsonPairedObjectModifier struct {
 }
 
-func (this jsonPairedObjectModifier) modify(input []byte) ([]byte, error) {
+func (mod jsonPairedObjectModifier) modify(input []byte) ([]byte, error) {
 	list, err := textToKvlist(input)
 	if err != nil {
 		return nil, err
 	}
-	return this.modifyKvlist(list)
+	return mod.modifyKvlist(list)
 }
 
-func (_ jsonPairedObjectModifier) modifyKvlist(input Kvlist) ([]byte, error) {
+func (jsonPairedObjectModifier) modifyKvlist(input Kvlist) ([]byte, error) {
 	if len(input)%2 != 0 {
 		return nil, errors.New(`Paired object needs an even number of inputs`)
 	}

@@ -5,7 +5,7 @@ import (
 	"testing"
 )
 
-var subst_vs = mockValueSource{values: map[pathKeyTuple][]byte{
+var substVs = mockValueSource{values: map[pathKeyTuple][]byte{
 	{`/path/to/thing`, `foo`}:    []byte(`bar`),
 	{`/path/to/thing`, `frog`}:   []byte(`wallop`),
 	{`/path/to/thing`, `really`}: []byte(`nice`),
@@ -41,7 +41,7 @@ func TestStringSubst(t *testing.T) {
 	}
 	for input, expect := range tests {
 		in := []byte(input)
-		subst := Substitutor{Source: subst_vs}
+		subst := Substitutor{Source: substVs}
 		res, errs := subst.Substitute(in)
 		if errs != nil {
 			t.Errorf("Got unexpected errors in substitute test %s", errs)
@@ -70,7 +70,7 @@ func TestStringSubstB64(t *testing.T) {
 	}
 	for input, expect := range tests {
 		in := []byte(input)
-		subst := Substitutor{Source: subst_vs}
+		subst := Substitutor{Source: substVs}
 		res, errs := subst.Substitute(in)
 		if errs != nil {
 			t.Errorf("Got unexpected errors in substitute test %s", errs)
@@ -104,7 +104,7 @@ func TestModifiers(t *testing.T) {
 	}
 	for input, expect := range tests {
 		in := []byte(input)
-		subst := Substitutor{Source: subst_vs}
+		subst := Substitutor{Source: substVs}
 		res, errs := subst.Substitute(in)
 		if errs != nil {
 			t.Errorf("Got unexpected errors in substitute test %s", errs)
