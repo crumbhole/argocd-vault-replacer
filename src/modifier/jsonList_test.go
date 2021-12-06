@@ -7,7 +7,7 @@ import (
 
 func TestJsonList(t *testing.T) {
 	tests := map[string]Kvlist{
-		`["val1","val2"]`: Kvlist{
+		`["val1","val2"]`: {
 			{Key: []byte(`key1`), Value: []byte(`val1`)},
 			{Key: []byte(`key2`), Value: []byte(`val2`)},
 		},

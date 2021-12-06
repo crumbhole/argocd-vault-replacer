@@ -8,11 +8,11 @@ import (
 func TestJsonKeyedObject(t *testing.T) {
 	// Fragile test - relies on output order of json.Marshal
 	tests := map[string]Kvlist{
-		`{"key1":"val1","key2":"val2"}`: Kvlist{
+		`{"key1":"val1","key2":"val2"}`: {
 			{Key: []byte(`key1`), Value: []byte(`val1`)},
 			{Key: []byte(`key2`), Value: []byte(`val2`)},
 		},
-		`{"key1":"val1","key2":"val2","oink":"foo","sausage":"bar"}`: Kvlist{
+		`{"key1":"val1","key2":"val2","oink":"foo","sausage":"bar"}`: {
 			{Key: []byte(`key1`), Value: []byte(`val1`)},
 			{Key: []byte(`key2`), Value: []byte(`val2`)},
 			{Key: []byte(`oink`), Value: []byte(`foo`)},

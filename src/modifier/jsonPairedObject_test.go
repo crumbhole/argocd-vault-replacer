@@ -8,11 +8,11 @@ import (
 func TestJsonPairedObject(t *testing.T) {
 	// Fragile test - relies on output order of json.Marshal
 	tests := map[string]Kvlist{
-		`{"val1":"val2"}`: Kvlist{
+		`{"val1":"val2"}`: {
 			{Key: []byte(`key1`), Value: []byte(`val1`)},
 			{Key: []byte(`key2`), Value: []byte(`val2`)},
 		},
-		`{"foo":"bar","val1":"val2"}`: Kvlist{
+		`{"foo":"bar","val1":"val2"}`: {
 			{Key: []byte(`key1`), Value: []byte(`val1`)},
 			{Key: []byte(`key2`), Value: []byte(`val2`)},
 			{Key: []byte(`oink`), Value: []byte(`foo`)},
@@ -33,12 +33,12 @@ func TestJsonPairedObject(t *testing.T) {
 
 func TestJsonPairedObjectFail(t *testing.T) {
 	tests := []Kvlist{
-		Kvlist{
+		{
 			{Key: []byte(`key1`), Value: []byte(`val1`)},
 			{Key: []byte(`key2`), Value: []byte(`val2`)},
 			{Key: []byte(`key3`), Value: []byte(`val3`)},
 		},
-		Kvlist{
+		{
 			{Key: []byte(`key1`), Value: []byte(`val1`)},
 		},
 	}
