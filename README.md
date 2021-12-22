@@ -204,3 +204,11 @@ You can modify the resulting output with the following modifiers:
 
 ## Rotating secrets in Vault
 Currently, because Argo CD cannot monitor Vault for changes, when you change a secret in Vault, Argo CD will not automatically update your Kubernetes resources with the new value. You will have to either push a change to git, use the Hard Refresh option in Argo CD, or force Argo CD to heal by deleting the Kubernetes resource in question.
+
+## Development
+
+This project only builds with go 1.17 (and presumably later when later happens).
+
+You can build in the docker container, or look at the [Makefile] to build and test conventionally.
+
+Please add tests for any new/changed functionallity.
