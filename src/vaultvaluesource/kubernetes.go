@@ -63,7 +63,7 @@ func (m *VaultValueSource) tryKubernetesAuth() error {
 	if jwt == "" {
 		return nil
 	}
-	secret, err := m.Client.Logical().Write("/auth/kubernetes/login/", map[string]interface{}{
+	secret, err := m.Client.Logical().Write(getVaultAuthPath(), map[string]interface{}{
 		"role": getVaultRole(),
 		"jwt":  jwt,
 	})
