@@ -7,7 +7,7 @@ require (
 	github.com/hashicorp/vault v1.9.2
 	github.com/hashicorp/vault/api v1.3.0
 	golang.org/x/crypto v0.0.0-20211215153901-e495a2d5b3d3
-	github.com/opencontainers/runc v1.0.3
+	github.com/opencontainers/runc v1.1.0
 	github.com/containerd/containerd v1.5.9
 	github.com/opencontainers/image-spec v1.0.2
 )
