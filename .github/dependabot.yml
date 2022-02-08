@@ -12,6 +12,9 @@ updates:
     labels:
       - "golang"
       - "dependencies"
+    reviewers:
+      - "Joibel"
+      - "tico24"
 
   # Maintain dependencies for GitHub Actions
   - package-ecosystem: "github-actions"
@@ -24,3 +27,6 @@ updates:
     labels:
       - "golang"
       - "dependencies"
+    reviewers:
+      - "Joibel"
+      - "tico24"
