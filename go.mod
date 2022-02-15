@@ -7,6 +7,7 @@ require (
 	github.com/hashicorp/vault v1.9.3
 	github.com/hashicorp/vault/api v1.3.1
 	golang.org/x/crypto v0.0.0-20211215153901-e495a2d5b3d3
+	github.com/docker/distribution 2.8.0
 )
 
 require (
