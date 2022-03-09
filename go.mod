@@ -5,7 +5,7 @@ go 1.17
 require (
 	github.com/crumbhole/bitwardenwrapper v0.0.0-20211201101208-25d89e09efd5
 	github.com/hashicorp/vault v1.9.4
-	github.com/hashicorp/vault/api v1.3.1
+	github.com/hashicorp/vault/api v1.4.1
 	golang.org/x/crypto v0.0.0-20220208050332-20e1d8d225ab
 )
 
@@ -98,7 +98,7 @@ require (
 	github.com/hashicorp/raft-autopilot v0.1.3 // indirect
 	github.com/hashicorp/raft-boltdb/v2 v2.0.0-20210421194847-a7e34179d62c // indirect
 	github.com/hashicorp/raft-snapshot v1.0.3 // indirect
-	github.com/hashicorp/vault/sdk v0.3.1-0.20220224202448-00c495209246 // indirect
+	github.com/hashicorp/vault/sdk v0.4.1 // indirect
 	github.com/hashicorp/vic v1.5.1-0.20190403131502-bbfe86ec9443 // indirect
 	github.com/hashicorp/yamux v0.0.0-20211028200310-0bc27b27de87 // indirect
 	github.com/huandu/xstrings v1.3.2 // indirect
