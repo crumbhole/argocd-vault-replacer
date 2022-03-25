@@ -5,7 +5,7 @@ go 1.17
 require (
 	github.com/crumbhole/bitwardenwrapper v0.0.0-20211201101208-25d89e09efd5
 	github.com/hashicorp/vault v1.10.0
-	github.com/hashicorp/vault/api v1.4.1
+	github.com/hashicorp/vault/api v1.5.0
 	golang.org/x/crypto v0.0.0-20220208050332-20e1d8d225ab
 )
 
