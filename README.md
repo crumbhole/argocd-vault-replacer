@@ -207,7 +207,7 @@ Currently, because Argo CD cannot monitor Vault for changes, when you change a s
 
 ## Development
 
-This project only builds with go 1.17 (and presumably later when later happens).
+This project only builds with go 1.18 (and presumably later when later happens).
 
 You can build in the docker container, or look at the [Makefile] to build and test conventionally.
 
