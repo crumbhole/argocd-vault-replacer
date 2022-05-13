@@ -3,7 +3,7 @@ ADD . /build
 WORKDIR /build
 RUN go vet ./...
 RUN go test ./...
-RUN go build -o build/argocd-vault-replacer
+RUN go build -buildvcs=false -o build/argocd-vault-replacer
 
 FROM alpine as putter
 COPY --from=builder /build/build/argocd-vault-replacer .
