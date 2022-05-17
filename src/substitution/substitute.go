@@ -1,6 +1,7 @@
 package substitution
 
 import (
+	"bytes"
 	"encoding/base64"
 	"regexp"
 )
@@ -21,6 +22,13 @@ func (s *Substitutor) substitutebase64(input []byte) []byte {
 	}
 	// Recurse with the decoded version
 	out, _ := s.substituteraw(decoded)
+
+	// Fast exit if subsititution has done nothing
+	// Works around a bug where we have something does not b64 encode->decode
+	// without without changing, for things that don't need substution
+	if bytes.Equal(out, decoded) {
+		return input
+	}
 	return []byte(base64.StdEncoding.EncodeToString(out))
 }
 

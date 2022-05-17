@@ -67,6 +67,7 @@ func TestStringSubstB64(t *testing.T) {
 		`fooPHZhdWx0Oi9wYXRoL3RvL3RoaW5nfmZvbz4= to be here`:                                                                       `fooPHZhdWx0Oi9wYXRoL3RvL3RoaW5nfmZvbz4= to be here`,
 		`fooPHZhdWx0Oi9wYXRoL3RvL3RoaW5nfmZvbz4=to be here`:                                                                        `fooPHZhdWx0Oi9wYXRoL3RvL3RoaW5nfmZvbz4=to be here`,
 		`VGhpcyBpcyBhIG1peGVkIHVwIDx2YXVsdDovcGF0aC90by90aGluZ35mb28+IHRoaW5nIDx2YXVsdDovc3BhY2VwYXRoLyUyMH5uaWNlPiBpbiBiYXNlNjQ=`: `VGhpcyBpcyBhIG1peGVkIHVwIGJhciB0aGluZyB0aW1lIGluIGJhc2U2NA==`,
+		`destination=`: `destination=`,
 	}
 	for input, expect := range tests {
 		in := []byte(input)
