@@ -131,6 +131,7 @@ require (
 	github.com/nicolai86/scaleway-sdk v1.10.2-0.20180628010248-798f60e20bb2 // indirect
 	github.com/oklog/run v1.1.0 // indirect
 	github.com/opencontainers/image-spec v1.0.2 // indirect
+	github.com/opencontainers/runc v1.1.2 // indirect
 	github.com/oracle/oci-go-sdk v13.1.0+incompatible // indirect
 	github.com/packethost/packngo v0.1.1-0.20180711074735-b9cb5096f54c // indirect
 	github.com/patrickmn/go-cache v2.1.0+incompatible // indirect
@@ -183,7 +184,7 @@ require (
 	gopkg.in/resty.v1 v1.12.0 // indirect
 	gopkg.in/square/go-jose.v2 v2.6.0 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
-	gopkg.in/yaml.v3 v3.0.0-20210107192922-496545a6307b // indirect
+	gopkg.in/yaml.v3 v3.0.1 // indirect
 	k8s.io/api v0.22.5 // indirect
 	k8s.io/apimachinery v0.22.5 // indirect
 	k8s.io/client-go v0.22.5 // indirect
