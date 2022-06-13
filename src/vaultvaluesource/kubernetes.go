@@ -16,6 +16,19 @@ const (
 	defaultAuthPath    = "/auth/kubernetes/login/"
 )
 
+const ARGO_PREFIX = `ARGOCD_ENV_`
+
+func getArgoEnv(name string, defaultVal string) string {
+	result, got := os.LookupEnv(ARGO_PREFIX + name)
+	if !got {
+		result, got = os.LookupEnv(name)
+		if !got {
+			return defaultVal
+		}
+	}
+	return result
+}
+
 // readJWT reads the JWT data for the Agent to submit to Vault. The default is
 // to read the JWT from the default service account location, defined by the
 // constant serviceAccountFile. In normal use k.jwtData is nil at invocation and
@@ -42,17 +55,15 @@ func readJWT() (string, error) {
 }
 
 func getVaultRole() string {
-	if val, ok := os.LookupEnv(roleEnv); ok {
-		return val
-	}
-	return defaultRole
+	return getArgoEnv(roleEnv, defaultRole)
 }
 
 func getVaultAuthPath() string {
-	if val, ok := os.LookupEnv(authPathEnv); ok {
-		return fmt.Sprintf("/auth/%s/login/", val)
+	path := getArgoEnv(authPathEnv, defaultAuthPath)
+	if path != defaultAuthPath {
+		return fmt.Sprintf("/auth/%s/login/", path)
 	}
-	return defaultAuthPath
+	return path
 }
 
 func (m *VaultValueSource) tryKubernetesAuth() error {

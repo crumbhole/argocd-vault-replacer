@@ -54,13 +54,23 @@ func (s *scanner) scanDir(path string) error {
 
 func selectValueSource() substitution.ValueSource {
 	// This would be better with a factory pattern
-	if _, bwpresent := os.LookupEnv(`BW_SESSION`); bwpresent {
+	if bwvaluesource.BwSession() {
 		return bwvaluesource.BitwardenValueSource{}
 	}
 	return vaultvaluesource.VaultValueSource{}
 }
 
+func copyEnv() {
+	for _, envEntry := range []string{`VAULT_ADDR`, `VAULT_TOKEN`} {
+		val, got := os.LookupEnv(`ARGOCD_ENV_` + envEntry)
+		if got {
+			os.Setenv(envEntry, val)
+		}
+	}
+}
+
 func main() {
+	copyEnv()
 	stat, _ := os.Stdin.Stat()
 	s := scanner{source: selectValueSource()}
 	if (stat.Mode() & os.ModeCharDevice) == 0 {
