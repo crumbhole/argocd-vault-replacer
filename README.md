@@ -79,11 +79,11 @@ initContainers:
     - mountPath: /custom-tools
       name: custom-tools
 ```
-The above references a Kubernetes secret called "argocd-vault-replacer-credentials". We use this to pass through the mandatory VAULT_ADDR environment variable. We could also use it to pass through optional variables too
+The above references a Kubernetes secret called "argocd-vault-replacer-credentials". We use this to pass through the mandatory ARGOCD_ENV_VAULT_ADDR environment variable. We could also use it to pass through optional variables too
 ```YAML
 apiVersion: v1
 data:
-  VAULT_ADDR: aHR0cHM6Ly92YXVsdC5leGFtcGxlLmJpeg==
+  ARGOCD_ENV_VAULT_ADDR: aHR0cHM6Ly92YXVsdC5leGFtcGxlLmJpeg==
 kind: Secret
 metadata:
   name: argocd-vault-replacer-credentials
@@ -95,11 +95,12 @@ Environment Variables:
 
 | Environment Variable Name | Purpose                                                                                                                               | Example                           | Mandatory? |
 |-------------------------- |-------------------------------------------------------------------------------------------------------------------------------------- |---------------------------------- |----------- |
-| VAULT_ADDR                | Provides argocd-vault-replacer with the URL to your Hashicorp Vault instance.                                                         | https://vault.examplecompany.biz  | Y
-| VAULT_TOKEN               | A valid Vault authentication token. This should only be used for debugging. This won't work inside kubernetes if you have a service account token available, as the tool considers a service account token that fails to authenticate a complete failure. You'll have to run a pod without a service account if you want to use this. The token cannot be renewed by the tool so if it expires, the tool will stop.                                                          | s.LLijB190n3c8s4fiSuvTdVNM        | N
-| VAULT_ROLE                | The name of the role for the VAULT_TOKEN. This defaults to 'argocd'.                                                                  | argocd-role                       | N
-| VAULT_AUTH_PATH           | Determines the authorization path for Kubernetes authentication. This defaults to 'kubernetes' so will probably not need configuring. | kubernetes                        | N
+| ARGOCD_ENV_VAULT_ADDR                | Provides argocd-vault-replacer with the URL to your Hashicorp Vault instance.                                                         | https://vault.examplecompany.biz  | Y
+| ARGOCD_ENV_VAULT_TOKEN               | A valid Vault authentication token. This should only be used for debugging. This won't work inside kubernetes if you have a service account token available, as the tool considers a service account token that fails to authenticate a complete failure. You'll have to run a pod without a service account if you want to use this. The token cannot be renewed by the tool so if it expires, the tool will stop.                                                          | s.LLijB190n3c8s4fiSuvTdVNM        | N
+| ARGOCD_ENV_VAULT_ROLE                | The name of the role for the VAULT_TOKEN. This defaults to 'argocd'.                                                                  | argocd-role                       | N
+| ARGOCD_ENV_VAULT_AUTH_PATH           | Determines the authorization path for Kubernetes authentication. This defaults to 'kubernetes' so will probably not need configuring. | kubernetes                        | N
 
+Before Argo CD 2.4 these did not need to be prefixed with ARGOCD_ENV_, and the current version will accept either type, with precedence given to the ARGOCD_ENV_ version.
 
 ## Plugin Configuration
 After installing the plugin into the /custom-tools/ directory, you need to register it inside the Argo CD config. Declaratively, you can add this to your argocd-cm configmap file:
@@ -174,14 +175,14 @@ The tool only has two methods of authenticating with Vault:
 * Using kubernetes authentication method https://github.com/hashicorp/vault/blob/master/website/content/docs/auth/kubernetes.mdx
 * Using a token, which is only intended for debugging
 
-Both methods expect the environment variable VAULT_ADDR to be set.
+Both methods expect the environment variable ARGOCD_ENV_VAULT_ADDR to be set.
 
 It will attempt to use kubernetes authentication through an appropriate service account first, and complain if that doesn't work. It will then use VAULT_TOKEN which should be a valid token. This tool has no way of renewing a token or obtaining one other than through a kubernetes service account.
 
 To use the kubernetes service account your pod should be running with the appropriate service account, and will try to obtain the JWT token from /var/run/secrets/kubernetes.io/serviceaccount/token which is the default location.
 
-It will use the environment variable VAULT_ROLE as the name of the role for that token, defaulting to "argocd".
-It will use the environment variable VAULT_AUTH_PATH to determine the authorization path for kubernetes authentication. This defaults in this tool and in vault to "kubernetes" so will probably not need configuring.
+It will use the environment variable ARGOCD_ENV_VAULT_ROLE as the name of the role for that token, defaulting to "argocd".
+It will use the environment variable ARGOCD_ENV_VAULT_AUTH_PATH to determine the authorization path for kubernetes authentication. This defaults in this tool and in vault to "kubernetes" so will probably not need configuring.
 
 The vault authentication token that the tool gets will not be cached, nor will it be renewed. It is expected that the token will last for the length of the tool's invokation, which is usually a reasonable assumption in the use case for which it was designed.
 
