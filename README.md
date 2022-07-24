@@ -102,6 +102,8 @@ Environment Variables:
 
 Before Argo CD 2.4 these did not need to be prefixed with ARGOCD_ENV_, and the current version will accept either type, with precedence given to the ARGOCD_ENV_ version.
 
+If you are passing the configuration in as application environment variables in Argo CD 2.4 or higher you must not put the ARGOCD_ENV_ prefix on them, as Argo CD does that for you.
+
 ## Plugin Configuration
 After installing the plugin into the /custom-tools/ directory, you need to register it inside the Argo CD config. Declaratively, you can add this to your argocd-cm configmap file:
 
