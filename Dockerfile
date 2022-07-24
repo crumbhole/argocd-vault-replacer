@@ -7,4 +7,5 @@ RUN go build -buildvcs=false -o build/argocd-vault-replacer
 
 FROM alpine as putter
 COPY --from=builder /build/build/argocd-vault-replacer .
-ENTRYPOINT [ "mv", "argocd-vault-replacer", "/custom-tools/" ]
+USER 999
+ENTRYPOINT [ "cp", "argocd-vault-replacer", "/custom-tools/" ]
