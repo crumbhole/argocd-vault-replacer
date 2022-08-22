@@ -1,6 +1,6 @@
 module github.com/crumbhole/argocd-vault-replacer
 
-go 1.18
+go 1.19
 
 require (
 	github.com/crumbhole/bitwardenwrapper v0.0.0-20220208104653-7e301bebc0d9
