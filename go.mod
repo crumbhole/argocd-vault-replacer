@@ -6,7 +6,7 @@ require (
 	github.com/crumbhole/bitwardenwrapper v0.0.0-20220208104653-7e301bebc0d9
 	github.com/hashicorp/vault v1.11.2
 	github.com/hashicorp/vault/api v1.7.2
-	golang.org/x/crypto v0.0.0-20220817201139-bc19a97f63c8
+	golang.org/x/crypto v0.0.0-20220824171710-5757bc0c5503
 )
 
 require (
