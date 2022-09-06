@@ -16,10 +16,10 @@ const (
 	defaultAuthPath    = "/auth/kubernetes/login/"
 )
 
-const ARGO_PREFIX = `ARGOCD_ENV_`
+const argoPrefix = `ARGOCD_ENV_`
 
 func getArgoEnv(name string, defaultVal string) string {
-	result, got := os.LookupEnv(ARGO_PREFIX + name)
+	result, got := os.LookupEnv(argoPrefix + name)
 	if !got {
 		result, got = os.LookupEnv(name)
 		if !got {
