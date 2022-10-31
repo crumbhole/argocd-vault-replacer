@@ -5,7 +5,7 @@ go 1.19
 require (
 	github.com/crumbhole/bitwardenwrapper v0.0.0-20220208104653-7e301bebc0d9
 	github.com/hashicorp/vault v1.12.0
-	github.com/hashicorp/vault/api v1.8.1
+	github.com/hashicorp/vault/api v1.8.2
 	golang.org/x/crypto v0.1.0
 )
 
