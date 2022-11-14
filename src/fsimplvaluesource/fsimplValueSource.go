@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io/fs"
 	"os"
+	"strings"
 
 	fsimpl "github.com/hairyhenderson/go-fsimpl"
 	"github.com/hairyhenderson/go-fsimpl/awssmfs"
@@ -35,44 +36,51 @@ func FsimplURL() *string {
 	return &val
 }
 
-func (m FsimplValueSource) init() {
-	if m.mux == nil {
-		mux := fsimpl.NewMux()
-		m.mux = &mux
-		m.mux.Add(awssmfs.FS)
-		m.mux.Add(awssmpfs.FS)
-		m.mux.Add(blobfs.FS)
-		m.mux.Add(consulfs.FS)
-		m.mux.Add(filefs.FS)
-		m.mux.Add(gitfs.FS)
-		m.mux.Add(httpfs.FS)
-		m.mux.Add(vaultfs.FS)
-	}
+func New() FsimplValueSource {
+	mux := fsimpl.NewMux()
+	mux.Add(awssmfs.FS)
+	mux.Add(awssmpfs.FS)
+	mux.Add(blobfs.FS)
+	mux.Add(consulfs.FS)
+	mux.Add(filefs.FS)
+	mux.Add(gitfs.FS)
+	mux.Add(httpfs.FS)
+	mux.Add(vaultfs.FS)
+	return FsimplValueSource{mux: mux}
 }
 
 // FsimplValueSource is a value source getting values from bitwarden
 type FsimplValueSource struct {
-	mux *fsimpl.FSMux
+	mux fsimpl.FSMux
 }
 
-// func (FsimplValueSource) getItemSplitPath(path string) (*bwwrap.BwItem, error) {
-// 	pathParts := strings.Split(string(path), `/`)
-// 	keyUsed := pathParts[len(pathParts)-1]
-// 	pathUsed := strings.Join(pathParts[:len(pathParts)-1], `/`)
-// 	return bwwrap.GetItemFromFolder(keyUsed, pathUsed)
-// }
+func MangleUrl(url string) (string, string) {
+	if strings.HasPrefix(url, `git`) {
+		split := strings.SplitN(url, "#", 2)
+		if len(split) > 1 {
+			return split[0], fmt.Sprintf("#%s", split[1])
+		}
+		return url, ``
+	}
+	return url, ``
+}
 
 // GetValue returns a value from a path+key in bitwarden or null if it doesn't exist
 func (m FsimplValueSource) GetValue(path []byte, key []byte) (*[]byte, error) {
 	if FsimplURL() == nil {
 		return nil, errors.New("SECRET_URL_PREFIX not set")
 	}
-	m.init()
-	url := fmt.Sprintf("%s%s", *FsimplURL(), path)
+	prefix, suffix := MangleUrl(*FsimplURL())
+	url := fmt.Sprintf("%s%s%s", prefix, path, suffix)
+	fmt.Printf("%s\n", url)
 	fsys, err := m.mux.Lookup(url)
 	if err != nil {
 		return nil, err
 	}
 	value, err := fs.ReadFile(fsys, string(key))
+	if err != nil {
+		return nil, err
+	}
+	fmt.Printf("URL value: %s %s\n", url, value)
 	return &value, err
 }
