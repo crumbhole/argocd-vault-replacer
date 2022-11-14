@@ -96,10 +96,12 @@ func TestDirectories(t *testing.T) {
 	s := scanner{source: vaultvaluesource.VaultValueSource{Client: client}}
 
 	for _, d := range dirs {
-		t.Logf("Testing dir %s", testsPath+d.Name())
-		err := checkDir(t, s, testsPath+d.Name())
-		if err != nil {
-			t.Error(err)
-		}
+		t.Run(d.Name(), func(t *testing.T) {
+			t.Logf("Testing dir %s", testsPath+d.Name())
+			err := checkDir(t, s, testsPath+d.Name())
+			if err != nil {
+				t.Error(err)
+			}
+		})
 	}
 }
