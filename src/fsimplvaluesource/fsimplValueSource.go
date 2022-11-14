@@ -23,8 +23,8 @@ const (
 	argoPrefix = "ARGOCD_ENV_"
 )
 
-// FsimplOK returns true of SECRET_URL_PREFIX or ARGOCD_ENV_SECRET_URL_PREFIX are set
-// If ARGOCD_ENV_SECRET_URL_PREFIX is set the value is copied to SECRET_URL_PREFIX
+// FsimplURL returns the value if SECRET_URL_PREFIX or ARGOCD_ENV_SECRET_URL_PREFIX are set
+// or nil if they are not
 func FsimplURL() *string {
 	val, got := os.LookupEnv(argoPrefix + envCheck)
 	if !got {
@@ -36,6 +36,8 @@ func FsimplURL() *string {
 	return &val
 }
 
+// New initialises a FsimplValueSource and returns it to the user
+// This is the recommended way of using this module
 func New() FsimplValueSource {
 	mux := fsimpl.NewMux()
 	mux.Add(awssmfs.FS)
@@ -54,15 +56,35 @@ type FsimplValueSource struct {
 	mux fsimpl.FSMux
 }
 
-func MangleUrl(url string) (string, string) {
+func ensureTrailingSlash(thing string) string {
+	if strings.HasSuffix(thing, `/`) {
+		return thing
+	}
+	return fmt.Sprintf("%s/", thing)
+}
+
+// MangleURL splits a url into a prefix and suffix and ensures
+// it meets rules fsimpl requires. Easier than documenting the rules.
+func MangleURL(url string) (string, string) {
 	if strings.HasPrefix(url, `git`) {
 		split := strings.SplitN(url, "#", 2)
+		prefix := ensureTrailingSlash(split[0])
+		suffix := ``
 		if len(split) > 1 {
-			return split[0], fmt.Sprintf("#%s", split[1])
+			suffix = fmt.Sprintf("#%s", split[1])
 		}
-		return url, ``
+		return prefix, suffix
 	}
 	return url, ``
+}
+
+// ManglePathForURL modifies a path for a specific protocol type
+// so they can all conform to a single set of rules
+func ManglePathForURL(url string, path string) string {
+	if strings.HasPrefix(url, `http`) {
+		return ensureTrailingSlash(path)
+	}
+	return path
 }
 
 // GetValue returns a value from a path+key in bitwarden or null if it doesn't exist
@@ -70,8 +92,8 @@ func (m FsimplValueSource) GetValue(path []byte, key []byte) (*[]byte, error) {
 	if FsimplURL() == nil {
 		return nil, errors.New("SECRET_URL_PREFIX not set")
 	}
-	prefix, suffix := MangleUrl(*FsimplURL())
-	url := fmt.Sprintf("%s%s%s", prefix, path, suffix)
+	prefix, suffix := MangleURL(*FsimplURL())
+	url := fmt.Sprintf("%s%s%s", prefix, ManglePathForURL(prefix, string(path)), suffix)
 	fmt.Printf("%s\n", url)
 	fsys, err := m.mux.Lookup(url)
 	if err != nil {

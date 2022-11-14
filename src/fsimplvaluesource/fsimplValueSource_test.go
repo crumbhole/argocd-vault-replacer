@@ -11,26 +11,30 @@ const (
 	urlPrefix = "SECRET_URL_PREFIX"
 )
 
-type mangleTest struct {
+type urlMangleTest struct {
 	prefix string
 	suffix string
 }
 
-func TestUrlMangler(t *testing.T) {
-	tests := map[string]mangleTest{
-		"git://github.com/abc/def#branchx": {
-			prefix: `git://github.com/abc/def`,
+func TestURLMangler(t *testing.T) {
+	tests := map[string]urlMangleTest{
+		`git://github.com/abc/def#branchx`: {
+			prefix: `git://github.com/abc/def/`,
 			suffix: `#branchx`,
 		},
-		"git+https://github.com/abc/def#branchx": {
-			prefix: `git+https://github.com/abc/def`,
+		`git+https://github.com/abc/def#branchx`: {
+			prefix: `git+https://github.com/abc/def/`,
 			suffix: `#branchx`,
 		},
-		"git+https://github.com/abc/def": {
-			prefix: `git+https://github.com/abc/def`,
+		`git+https://github.com/abc/def/#branchx`: {
+			prefix: `git+https://github.com/abc/def/`,
+			suffix: `#branchx`,
+		},
+		`git+https://github.com/abc/def`: {
+			prefix: `git+https://github.com/abc/def/`,
 			suffix: ``,
 		},
-		"file://github.com/abc/def#branchx": {
+		`file://github.com/abc/def#branchx`: {
 			prefix: `file://github.com/abc/def#branchx`,
 			suffix: ``,
 		},
@@ -38,12 +42,43 @@ func TestUrlMangler(t *testing.T) {
 
 	for url, test := range tests {
 		t.Run(url, func(t *testing.T) {
-			prefix, suffix := MangleUrl(url)
+			prefix, suffix := MangleURL(url)
 			if prefix != test.prefix {
-				t.Errorf("Unexpected prefix for %s. Got %s, wanted %s", url, prefix, test.prefix)
+				t.Errorf(`Unexpected prefix for %s. Got %s, wanted %s`, url, prefix, test.prefix)
 			}
 			if suffix != test.suffix {
-				t.Errorf("Unexpected suffix for %s. Got %s, wanted %s", url, suffix, test.suffix)
+				t.Errorf(`Unexpected suffix for %s. Got %s, wanted %s`, url, suffix, test.suffix)
+			}
+		})
+	}
+}
+
+type pathMangleTest struct {
+	url  string
+	path string
+}
+
+func TestPathMangler(t *testing.T) {
+	tests := map[pathMangleTest]string{
+		{
+			url:  `git://github.com/abc/def#branchx`,
+			path: `test`,
+		}: `test`,
+		{
+			url:  `https://github.com/abc/def/`,
+			path: `/test`,
+		}: `/test/`,
+		{
+			url:  `https://github.com/abc/def/`,
+			path: `/test/`,
+		}: `/test/`,
+	}
+
+	for test, expected := range tests {
+		t.Run(fmt.Sprintf("%s:%s", test.url, test.path), func(t *testing.T) {
+			result := ManglePathForURL(test.url, test.path)
+			if result != expected {
+				t.Errorf("Unexpected result for %s %s. Got %s, wanted %s", test.url, test.path, result, expected)
 			}
 		})
 	}
@@ -70,7 +105,7 @@ func TestGetValueSimple(t *testing.T) {
 }
 
 type FsimplTest struct {
-	Url    string
+	URL    string
 	Path   string
 	Key    string
 	Result string
@@ -80,8 +115,14 @@ func TestGetValues(t *testing.T) {
 	vs := New()
 	//	cwd, _ := os.Getwd()
 	tests := map[string]FsimplTest{
-		"Github over https": {
-			Url:    "git+https://github.com/crumbhole/argocd-vault-replacer.git/#main",
+		"Github over git+https": {
+			URL:    "git+https://github.com/crumbhole/argocd-vault-replacer.git/#main",
+			Path:   "/testvalues",
+			Key:    "foo",
+			Result: "bar",
+		},
+		"Github over raw https": {
+			URL:    "https://raw.githubusercontent.com/crumbhole/argocd-vault-replacer/main",
 			Path:   "/testvalues",
 			Key:    "foo",
 			Result: "bar",
@@ -90,10 +131,13 @@ func TestGetValues(t *testing.T) {
 
 	for name, test := range tests {
 		t.Run(name, func(t *testing.T) {
-			os.Setenv(urlPrefix, test.Url)
+			os.Setenv(urlPrefix, test.URL)
 			val, err := vs.GetValue([]byte(test.Path), []byte(test.Key))
 			if err != nil {
 				t.Errorf("Unexpected error %s", err)
+			}
+			if val == nil {
+				t.Fatal("Unexpected nil value")
 			}
 			if !bytes.Equal(*val, []byte(test.Result)) {
 				t.Errorf("%s~%s -> %s, got %s", test.Path, test.Key, test.Result, *val)
