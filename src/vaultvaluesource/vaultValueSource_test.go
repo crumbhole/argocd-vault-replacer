@@ -9,10 +9,6 @@ import (
 	"testing"
 )
 
-const (
-	testsPath = "test/"
-)
-
 func createTestVault(t *testing.T) (net.Listener, *api.Client) {
 	t.Helper()
 
