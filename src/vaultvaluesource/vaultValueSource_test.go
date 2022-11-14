@@ -54,7 +54,7 @@ func TestGetValue(t *testing.T) {
 		t.Errorf("Unexpected error %s", err)
 	}
 	if !bytes.Equal(*val, []byte(`hi`)) {
-		t.Errorf("/secret/data/path,foo !-> hi, got %s", val)
+		t.Errorf("/secret/data/path,foo !-> hi, got %s", *val)
 	}
 	val, err = vs.GetValue([]byte(`pa`), []byte(`key`))
 	expectedError := `Unexpectedly couldn't find pa ! key`

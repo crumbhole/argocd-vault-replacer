@@ -56,7 +56,7 @@ func (s *scanner) scanDir(path string) error {
 func selectValueSource() substitution.ValueSource {
 	// This would be better with a factory pattern
 	if fsimplvaluesource.FsimplURL() != nil {
-		return fsimplvaluesource.FsimplValueSource{}
+		return fsimplvaluesource.New()
 	}
 	if bwvaluesource.BwSession() {
 		return bwvaluesource.BitwardenValueSource{}
