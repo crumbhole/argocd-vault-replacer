@@ -14,7 +14,7 @@ const (
 )
 
 // BwSession returns true of BW_SESSION or ARGOCD_ENV_BW_SESSION are set
-// If ARGOCD_ENV_BWSESSION is set the value is copied to BW_SESSION
+// If ARGOCD_ENV_BW_SESSION is set the value is copied to BW_SESSION
 func BwSession() bool {
 	val, got := os.LookupEnv(argoPrefix + envCheck)
 	if !got {

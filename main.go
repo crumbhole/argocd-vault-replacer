@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"github.com/crumbhole/argocd-vault-replacer/src/bwvaluesource"
+	"github.com/crumbhole/argocd-vault-replacer/src/fsimplvaluesource"
 	"github.com/crumbhole/argocd-vault-replacer/src/substitution"
 	"github.com/crumbhole/argocd-vault-replacer/src/vaultvaluesource"
 	"io/ioutil"
@@ -54,6 +55,9 @@ func (s *scanner) scanDir(path string) error {
 
 func selectValueSource() substitution.ValueSource {
 	// This would be better with a factory pattern
+	if fsimplvaluesource.FsimplURL() != nil {
+		return fsimplvaluesource.FsimplValueSource{}
+	}
 	if bwvaluesource.BwSession() {
 		return bwvaluesource.BitwardenValueSource{}
 	}
