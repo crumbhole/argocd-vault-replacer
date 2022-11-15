@@ -3,8 +3,11 @@ package fsimplvaluesource
 import (
 	"errors"
 	"fmt"
+	"gopkg.in/yaml.v3"
 	"io/fs"
 	"os"
+	"path/filepath"
+	"regexp"
 	"strings"
 
 	fsimpl "github.com/hairyhenderson/go-fsimpl"
@@ -51,7 +54,7 @@ func New() FsimplValueSource {
 	return FsimplValueSource{mux: mux}
 }
 
-// FsimplValueSource is a value source getting values from bitwarden
+// FsimplValueSource is a value source getting values from many sources
 type FsimplValueSource struct {
 	mux fsimpl.FSMux
 }
@@ -68,7 +71,7 @@ func ensureTrailingSlash(thing string) string {
 func MangleURL(url string) (string, string) {
 	if strings.HasPrefix(url, `git`) {
 		split := strings.SplitN(url, "#", 2)
-		prefix := ensureTrailingSlash(split[0])
+		prefix := split[0]
 		suffix := ``
 		if len(split) > 1 {
 			suffix = fmt.Sprintf("#%s", split[1])
@@ -87,14 +90,62 @@ func ManglePathForURL(url string, path string) string {
 	return path
 }
 
-// GetValue returns a value from a path+key in bitwarden or null if it doesn't exist
-func (m FsimplValueSource) GetValue(path []byte, key []byte) (*[]byte, error) {
-	if FsimplURL() == nil {
-		return nil, errors.New("SECRET_URL_PREFIX not set")
+func findYamlPath(yamlVal map[string]interface{}, path []string, key string) (*[]byte, error) {
+	if len(path) > 0 {
+		subYaml, exists := yamlVal[path[0]]
+		if exists {
+			subYamlC, ok := subYaml.(map[string]interface{})
+			if ok {
+				return findYamlPath(subYamlC, path[1:], key)
+			} else {
+				return nil, errors.New("Path not found in yaml")
+			}
+		}
 	}
-	prefix, suffix := MangleURL(*FsimplURL())
+	subYaml, exists := yamlVal[key]
+	if exists {
+		subYamlS, ok := subYaml.(string)
+		if ok {
+			subYamlB := []byte(subYamlS)
+			return &subYamlB, nil
+		} else {
+			return nil, errors.New("Key not string in yaml")
+		}
+	}
+	return nil, errors.New("Key not found in yaml")
+}
+
+func parseYaml(yamlContents []byte, path []byte, key []byte) (*[]byte, error) {
+	yamlVal := make(map[string]interface{})
+	err := yaml.Unmarshal(yamlContents, yamlVal)
+	if err != nil {
+		return nil, err
+	}
+	splitPath := strings.Split(string(path), "/")
+	if splitPath[0] == `` {
+		splitPath = splitPath[1:]
+	}
+	return findYamlPath(yamlVal, splitPath, string(key))
+}
+
+func (m FsimplValueSource) yamlFile(prefix string, suffix string, path []byte, key []byte) (*[]byte, error) {
+	prefixDir, prefixFile := filepath.Split(prefix)
+	url := fmt.Sprintf("%s%s", prefixDir, suffix)
+	fmt.Printf("YAML: %s\n", url)
+	fsys, err := m.mux.Lookup(url)
+	if err != nil {
+		return nil, err
+	}
+	yamlContents, err := fs.ReadFile(fsys, string(prefixFile))
+	if err != nil {
+		return nil, err
+	}
+	return parseYaml(yamlContents, path, key)
+}
+
+func (m FsimplValueSource) fileContents(prefix string, suffix string, path []byte, key []byte) (*[]byte, error) {
 	url := fmt.Sprintf("%s%s%s", prefix, ManglePathForURL(prefix, string(path)), suffix)
-	fmt.Printf("%s\n", url)
+	fmt.Printf("File: %s\n", url)
 	fsys, err := m.mux.Lookup(url)
 	if err != nil {
 		return nil, err
@@ -105,4 +156,19 @@ func (m FsimplValueSource) GetValue(path []byte, key []byte) (*[]byte, error) {
 	}
 	fmt.Printf("URL value: %s %s\n", url, value)
 	return &value, err
+}
+
+// GetValue returns a value from a path+key in bitwarden or null if it doesn't exist
+func (m FsimplValueSource) GetValue(path []byte, key []byte) (*[]byte, error) {
+	if FsimplURL() == nil {
+		return nil, errors.New("SECRET_URL_PREFIX not set")
+	}
+	prefix, suffix := MangleURL(*FsimplURL())
+
+	fmt.Printf("Prefix %s\n", prefix)
+	yamlRegex := regexp.MustCompile(`(ya?ml|json)$`)
+	if yamlRegex.Match([]byte(prefix)) {
+		return m.yamlFile(prefix, suffix, path, key)
+	}
+	return m.fileContents(prefix, suffix, path, key)
 }
