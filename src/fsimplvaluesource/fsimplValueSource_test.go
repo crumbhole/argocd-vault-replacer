@@ -19,11 +19,11 @@ type urlMangleTest struct {
 func TestURLMangler(t *testing.T) {
 	tests := map[string]urlMangleTest{
 		`git://github.com/abc/def#branchx`: {
-			prefix: `git://github.com/abc/def/`,
+			prefix: `git://github.com/abc/def`,
 			suffix: `#branchx`,
 		},
 		`git+https://github.com/abc/def#branchx`: {
-			prefix: `git+https://github.com/abc/def/`,
+			prefix: `git+https://github.com/abc/def`,
 			suffix: `#branchx`,
 		},
 		`git+https://github.com/abc/def/#branchx`: {
@@ -31,7 +31,7 @@ func TestURLMangler(t *testing.T) {
 			suffix: `#branchx`,
 		},
 		`git+https://github.com/abc/def`: {
-			prefix: `git+https://github.com/abc/def/`,
+			prefix: `git+https://github.com/abc/def`,
 			suffix: ``,
 		},
 		`file://github.com/abc/def#branchx`: {
@@ -104,44 +104,93 @@ func TestGetValueSimple(t *testing.T) {
 	}
 }
 
-type FsimplTest struct {
-	URL    string
-	Path   string
-	Key    string
-	Result string
+type FsimplValue struct {
+	path string
+	key  string
+}
+
+func TestParseYaml(t *testing.T) {
+	yamlContents := []byte(`
+foo:
+  bar: orange
+  fish:
+    cod: trout
+`)
+	testValues := map[FsimplValue]string{
+		{
+			path: `foo`,
+			key:  `bar`,
+		}: `orange`,
+		{
+			path: `/foo`,
+			key:  `bar`,
+		}: `orange`,
+		{
+			path: `foo/`,
+			key:  `bar`,
+		}: `orange`,
+		{
+			path: `/foo/`,
+			key:  `bar`,
+		}: `orange`,
+		{
+			path: `/foo/fish`,
+			key:  `cod`,
+		}: `trout`,
+	}
+	for test, expected := range testValues {
+		val, err := parseYaml(yamlContents, []byte(test.path), []byte(test.key))
+		if err != nil {
+			t.Errorf("Unexpected error %s", err)
+		}
+		if val == nil {
+			t.Fatal("Unexpected nil value")
+		}
+		if !bytes.Equal(*val, []byte(expected)) {
+			t.Errorf("Wanted %s, got %s", expected, *val)
+		}
+	}
 }
 
 func TestGetValues(t *testing.T) {
 	vs := New()
 	//	cwd, _ := os.Getwd()
-	tests := map[string]FsimplTest{
-		"Github over git+https": {
-			URL:    "git+https://github.com/crumbhole/argocd-vault-replacer.git/#main",
-			Path:   "/testvalues",
-			Key:    "foo",
-			Result: "bar",
-		},
-		"Github over raw https": {
-			URL:    "https://raw.githubusercontent.com/crumbhole/argocd-vault-replacer/main",
-			Path:   "/testvalues",
-			Key:    "foo",
-			Result: "bar",
-		},
+	testValues := map[FsimplValue]string{
+		{
+			path: `/testvalues`,
+			key:  `foo`,
+		}: `bar`,
+		{
+			path: `/testvalues/lemon`,
+			key:  `fig`,
+		}: `banana`,
+	}
+	sources := map[string]string{
+		`git+https://github.com/crumbhole/argocd-vault-replacer.git/#main`:                            `oaQuei1aij`,
+		`https://raw.githubusercontent.com/crumbhole/argocd-vault-replacer/main`:                      `oaQuei1aij`, // Same data as git
+		`git+https://github.com/crumbhole/argocd-vault-replacer.git/#testdata`:                        `Ooy3phie4o`,
+		`git+https://github.com/crumbhole/argocd-vault-replacer.git//testvalues/test.yaml#main`:       `iegeiFe3ae`,
+		`https://raw.githubusercontent.com/crumbhole/argocd-vault-replacer/main/testvalues/test.yaml`: `iegeiFe3ae`, // Same data as git
+		`git+https://github.com/crumbhole/argocd-vault-replacer.git//testvalues/test.yml#main`:        `vieHuch8yi`,
+		`git+https://github.com/crumbhole/argocd-vault-replacer.git//testvalues/test.json#main`:       `bohg2luSai`,
 	}
 
-	for name, test := range tests {
-		t.Run(name, func(t *testing.T) {
-			os.Setenv(urlPrefix, test.URL)
-			val, err := vs.GetValue([]byte(test.Path), []byte(test.Key))
-			if err != nil {
-				t.Errorf("Unexpected error %s", err)
-			}
-			if val == nil {
-				t.Fatal("Unexpected nil value")
-			}
-			if !bytes.Equal(*val, []byte(test.Result)) {
-				t.Errorf("%s~%s -> %s, got %s", test.Path, test.Key, test.Result, *val)
-			}
-		})
+	for url, suffix := range sources {
+		for values, prefix := range testValues {
+			t.Run(fmt.Sprintf("%s%s¬%s", url, values.path, values.key), func(t *testing.T) {
+				os.Setenv(urlPrefix, url)
+				val, err := vs.GetValue([]byte(values.path), []byte(values.key))
+				if err != nil {
+					t.Errorf("Unexpected error %s", err)
+				}
+				if val == nil {
+					t.Fatal("Unexpected nil value")
+				}
+				expected := fmt.Sprintf("%s-%s", prefix, suffix)
+				if !bytes.Equal(*val, []byte(expected)) {
+					t.Errorf("%s~%s -> %s, got %s", values.path, values.key, expected, *val)
+				}
+			})
+		}
 	}
 }
