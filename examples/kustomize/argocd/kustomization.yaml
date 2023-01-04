@@ -1,24 +1,24 @@
-# kustomize build . >argocd-deploy.yml
+# kubectl kustomize . > argocd-deploy.yaml
 #
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 namespace: argocd
 
 resources:
-- https://raw.githubusercontent.com/argoproj/argo-cd/v1.8.4/manifests/ha/install.yaml
-- argocd-vault-replacer-secret.yml
-- serviceaccount.yml
+- https://raw.githubusercontent.com/argoproj/argo-cd/v2.5.5/manifests/ha/install.yaml
+- argocd-vault-replacer-secret.yaml
+- serviceaccount.yaml
 
 patches:
-- path: argo-cm.yml
+- path: argo-cm.yaml
   target:
     kind: ConfigMap
     name: argocd-cm
-- path: argocd-vault-replacer.yml
+- path: argocd-vault-replacer.yaml
   target:
     kind: Deployment
     name: argocd-repo-server
-- path: patch-serviceAccount.yml
+- path: patch-serviceAccount.yaml
   target:
     kind: Deployment
     name: argocd-repo-server
