@@ -31,6 +31,27 @@ metadata:
   namespace: argocd
 ```
 
+For Kubernetes [version 1.24](https://github.com/kubernetes/kubernetes/blob/master/CHANGELOG/CHANGELOG-1.24.md#urgent-upgrade-notes) and newer there is no automatic service account token generated. This must be generated as a secret and the service account must refer to said secret:
+
+```YAML
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  namespace: argocd
+  name: argocd
+secrets:
+- name: argocd-sa-token
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  namespace: argocd
+  name: argocd-sa-token
+  annotations:
+    kubernetes.io/service-account.name: argocd
+type: kubernetes.io/service-account-token
+```
+
 You will need to tell Vault about this Service Account and what policy/policies it maps to:
 
 ```
