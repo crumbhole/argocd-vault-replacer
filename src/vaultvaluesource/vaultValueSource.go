@@ -36,7 +36,7 @@ func (m VaultValueSource) GetValue(path []byte, key []byte) (*[]byte, error) {
 		return nil, err
 	}
 	if secret == nil {
-		return nil, fmt.Errorf("Unexpectedly couldn't find %s ! %s", path, key)
+		return nil, fmt.Errorf("Unexpectedly couldn't find %s~%s", path, key)
 	}
 
 	// Joy of casting in go

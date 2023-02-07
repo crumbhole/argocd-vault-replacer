@@ -57,7 +57,7 @@ func TestGetValue(t *testing.T) {
 		t.Errorf("/secret/data/path,foo !-> hi, got %s", val)
 	}
 	val, err = vs.GetValue([]byte(`pa`), []byte(`key`))
-	expectedError := `Unexpectedly couldn't find pa ! key`
+	expectedError := `Unexpectedly couldn't find pa~key`
 	if err != nil && err.Error() != expectedError {
 		t.Errorf("Expecting %s, got %s", expectedError, err)
 	}
