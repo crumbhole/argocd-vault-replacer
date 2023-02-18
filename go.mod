@@ -4,7 +4,7 @@ go 1.20
 
 require (
 	github.com/crumbhole/bitwardenwrapper v0.0.0-20230218201331-228a231a3fa2
-	github.com/hashicorp/vault v1.12.2
+	github.com/hashicorp/vault v1.12.3
 	github.com/hashicorp/vault/api v1.9.0
 	golang.org/x/crypto v0.6.0
 )
@@ -60,7 +60,7 @@ require (
 	github.com/duosecurity/duo_api_golang v0.0.0-20190308151101-6c680f768e74 // indirect
 	github.com/evanphx/json-patch/v5 v5.6.0 // indirect
 	github.com/fatih/color v1.13.0 // indirect
-	github.com/frankban/quicktest v1.11.3 // indirect
+	github.com/frankban/quicktest v1.14.2 // indirect
 	github.com/go-logr/logr v1.2.2 // indirect
 	github.com/go-ole/go-ole v1.2.6 // indirect
 	github.com/go-openapi/analysis v0.20.0 // indirect
@@ -130,7 +130,7 @@ require (
 	github.com/hashicorp/raft-autopilot v0.1.6 // indirect
 	github.com/hashicorp/raft-boltdb/v2 v2.0.0-20210421194847-a7e34179d62c // indirect
 	github.com/hashicorp/raft-snapshot v1.0.4 // indirect
-	github.com/hashicorp/vault/sdk v0.6.1-0.20221102145943-1e9b0a1225c3 // indirect
+	github.com/hashicorp/vault/sdk v0.6.1-0.20221130221033-2b200844a606 // indirect
 	github.com/hashicorp/vic v1.5.1-0.20190403131502-bbfe86ec9443 // indirect
 	github.com/hashicorp/yamux v0.1.1 // indirect
 	github.com/huandu/xstrings v1.3.2 // indirect
