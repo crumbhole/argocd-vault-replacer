@@ -15,7 +15,7 @@ test: get
 
 build/argocd-vault-replacer: $(DEPS) get
 	mkdir -p build
-	go build -o build ./...
+	CGO_ENABLED=0 go build -o build ./...
 
 code-vet: $(DEPS) get
 ## Run go vet for this project. More info: https://golang.org/cmd/vet/
