@@ -1,7 +1,9 @@
 # argocd-vault-replacer
-An [Argo CD](https://argoproj.github.io/argo-cd/) plugin to replace placeholders in Kubernetes manifests with secrets stored in [Hashicorp Vault](https://www.vaultproject.io/). The binary will scan the current directory recursively for any .yaml (or .yml if you're so inclined) files and attempt to replace strings of the form `<secret:/store/data/path~key>` with those obtained from a Vault kv2 store.
+A  plugin for [ArgoCD lovely plugin](https://github.com/crumbhole/argocd-lovely-plugin) to replace placeholders in Kubernetes manifests with secrets stored in [Hashicorp Vault](https://www.vaultproject.io/). The binary will scan the current directory recursively for any .yaml (or .yml if you're so inclined) files, or take yaml from stdin, and attempt to replace strings of the form `<secret:/store/data/path~key>` with those obtained from a Vault kv2 store.
 
 If you use it as the reader in a unix pipe, it will instead read from stdin. In this scenario it can post-process the output of another tool, such as Kustomize or Helm.
+
+This plugin used to be available as a direct plugin to ArgoCD, but has not been adapted for ArgoCD 2.7's need for running as a sidecar. If this need is one you have, please raise an issue or ideally a PR. The authors now only use this through lovely plugin.
 
 Note: This and previous versions of this plugin only talk to vault, and hence <secret:...> can also be specified as <vault:...>. Future plans may include other secret providers.
 
@@ -15,7 +17,13 @@ Note: This and previous versions of this plugin only talk to vault, and hence <s
   - Also supports Argo CD-managed Kustomize and Helm charts
 - Native Vault-Kubernetes authentication means you don't have to renew tokens or store/passthrough approle role-ids and secret-ids.
 
-# Installing as an Argo CD Plugin
+#Installing
+
+## As a lovely plugin
+
+Install [ArgoCD lovely plugin](https://github.com/crumbhole/argocd-lovely-plugin) using the ghcr.io/crumbhole/argocd-lovely-plugin-cmp-vault image. Setup your vault-replacer environment variables in that sidecar.
+
+## Installing as an Argo CD Plugin (deprecated)
 You can use [our Kustomization example](https://github.com/crumbhole/argocd-vault-replacer/tree/main/examples/kustomize/argocd) to install Argo CD and to bootstrap the installation of the plugin at the same time. However the steps below will detail what is required should you wish to do things more manually. The Vault authentication setup cannot be done with Kustomize and must be done manually.
 
 ## Vault Kubernetes Authentication
@@ -235,4 +243,4 @@ This project only builds with go 1.18 (and presumably later when later happens).
 
 You can build in the docker container, or look at the [Makefile] to build and test conventionally.
 
-Please add tests for any new/changed functionallity.
+Please add tests for any new/changed functionality.
