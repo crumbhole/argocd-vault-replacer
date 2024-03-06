@@ -2,9 +2,9 @@ package vaultvaluesource
 
 import (
 	"bytes"
-	"github.com/hashicorp/vault/api"
 	"github.com/hashicorp/vault/http"
 	"github.com/hashicorp/vault/vault"
+	"github.com/openbao/openbao/api"
 	"net"
 	"testing"
 )
