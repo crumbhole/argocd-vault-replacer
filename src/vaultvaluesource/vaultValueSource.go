@@ -2,17 +2,17 @@ package vaultvaluesource
 
 import (
 	"fmt"
-	vault "github.com/hashicorp/vault/api"
+	"github.com/openbao/openbao/api"
 )
 
 // VaultValueSource is a value source getting values from hashicorp vault
 type VaultValueSource struct {
-	Client *vault.Client
+	Client *api.Client
 }
 
 func (m *VaultValueSource) initClient() error {
 	if m.Client == nil {
-		client, err := vault.NewClient(nil)
+		client, err := api.NewClient(nil)
 		if err != nil {
 			return err
 		}
