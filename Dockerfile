@@ -1,4 +1,4 @@
-FROM golang:1.22.3 as builder
+FROM golang:1.24.3 as builder
 ADD . /build
 WORKDIR /build
 RUN go vet ./...
